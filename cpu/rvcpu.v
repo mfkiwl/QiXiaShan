@@ -30,16 +30,25 @@ wire [4 : 0]inst_type;
 wire [7 : 0]inst_opcode;
 wire [`REG_BUS]op1;
 wire [`REG_BUS]op2;
+// id stage -> mem_stage
+wire mem_w_ena;
+// id stage -> wb_stage
+wire mem_to_reg;
 
 // regfile -> id_stage
 wire [`REG_BUS] r_data1;
 wire [`REG_BUS] r_data2;
 
-// exe_stage
 // exe_stage -> other stage
-wire [4 : 0]inst_type_o;
-// exe_stage -> regfile
-wire [`REG_BUS]rd_data;
+wire [4 : 0] inst_type_o;
+// exe_stage -> mem/wb_stage
+wire [`REG_BUS] exe_data;
+
+// mem_stage -> wb_stage
+wire [`REG_BUS] mem_r_data;
+
+// wb_stage -> regfile
+wire [`REG_BUS] rd_data;
 
 if_stage If_stage(
   .clk(clk),
@@ -64,7 +73,9 @@ id_stage Id_stage(
   .inst_type(inst_type),
   .inst_opcode(inst_opcode),
   .op1(op1),
-  .op2(op2)
+  .op2(op2),
+  .mem_to_reg(mem_to_reg),
+  .mem_w_ena(mem_w_ena)
 );
 
 exe_stage Exe_stage(
@@ -75,7 +86,24 @@ exe_stage Exe_stage(
   .op2(op2),
   
   .inst_type_o(inst_type_o),
-  .rd_data(rd_data)
+  .rd_data(exe_data)
+);
+
+mem_stage Mem_stage(
+  .rst(rst),
+  .addr(exe_data),
+  .mem_w_ena(mem_w_ena),
+
+  .mem_r_data(mem_r_data)
+);
+
+wb_stage Wb_stage(
+  .rst(rst),
+  .mem_to_reg(mem_to_reg),
+  .exe_data(exe_data),
+  .mem_data(mem_r_data),
+
+  .w_data(rd_data)
 );
 
 regfile Regfile(

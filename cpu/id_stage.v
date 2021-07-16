@@ -22,7 +22,10 @@ module id_stage(
   output wire [4 : 0]inst_type,
   output wire [7 : 0]inst_opcode,
   output wire [`REG_BUS]op1,
-  output wire [`REG_BUS]op2
+  output wire [`REG_BUS]op2,
+
+  output wire mem_to_reg,
+  output wire mem_w_ena
 );
 
 
@@ -68,5 +71,9 @@ assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
 assign op1 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rs1_data : 0 );
 assign op2 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? { {52{imm[11]}}, imm } : 0 );
 
+wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
+assign mem_to_reg = (rst == 1'b1) ? 0 : inst_load;
+wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
+assign mem_w_ena = (rst == 1'b1) ? 0 : inst_save;
 
 endmodule
