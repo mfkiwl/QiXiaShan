@@ -229,7 +229,7 @@ assign exe_op2 = {64{~rst}} & (
               | ({64{inst_b}}             & r_data2)
               | ({64{inst_i_sys}}         & 64'b0)
              );
-/*
+
 assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
                | ({64{inst_j}} & {{43{immJ[20]}}, immJ})
                | ({64{inst_i_jalr}} & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
@@ -238,7 +238,6 @@ wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
 assign mem_to_reg = (rst == 1'b1) ? 0 : inst_load;
 wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
 assign mem_w_ena = (rst == 1'b1) ? 0 : inst_save;
-*/
 
 
 wire inst_addi =   ~opcode[2] & ~opcode[3] & opcode[4] & ~opcode[5] & ~opcode[6]
@@ -256,7 +255,7 @@ assign inst_opcode[4] = (  rst == 1'b1 ) ? 0 : inst_addi;
 assign inst_opcode[5] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[6] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[7] = (  rst == 1'b1 ) ? 0 : 0;
-
+/*
 assign rs1_r_ena  = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rs1_r_addr = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rs1 : 0 );
 assign rs2_r_ena  = 0;
@@ -264,12 +263,6 @@ assign rs2_r_addr = 0;
 
 assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
-
-//assign exe_op1 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? r_data1 : 0 );
-//assign exe_op2 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? { {52{immI[11]}}, immI } : 0 );
-
-assign mem_to_reg = (rst == 1'b1) ? 0 : inst_i_load;
-assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
-
+*/
 
 endmodule
