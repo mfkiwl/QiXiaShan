@@ -184,16 +184,15 @@ assign bj_info[`BJ_BGEU] = inst_bgeu;
 assign bj_info[`BJ_JALR] = inst_jalr;
 assign bj_info[`BJ_JAL]  = inst_jal;
 
-
+/*
 // arith inst, lui, auipc: 10000;
 // load-store: 00100; j: 00010;  sys: 00001
 // fence: 01000; b: 10010
-/*
+
 assign rs1_r_ena  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
                           | inst_i_arith_word | inst_r_dword | inst_r_word
                           | inst_b | inst_i_jalr | inst_i_sys);
 assign rs1_r_addr = (rs1_r_ena == 1'b1) ? rs1 : 0;
-
 assign rs2_r_ena  = ~rst & (inst_r_dword | inst_r_word | inst_s | inst_b);
 assign rs2_r_addr = (rs2_r_ena == 1'b1) ? rs2 : 0;
 
@@ -202,21 +201,6 @@ assign rd_w_ena   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
                           | inst_u_lui | inst_r_word | inst_i_jalr | inst_j
                           | inst_i_sys);
 assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
-*/
-/*
-wire rs1_r_ena_b  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
-                          | inst_i_arith_word | inst_r_dword | inst_r_word
-                          | inst_b | inst_i_jalr | inst_i_sys);
-wire [4:0]rs1_r_addr_b = (rs1_r_ena == 1'b1) ? rs1 : 0;
-
-wire rs2_r_ena_b  = ~rst & (inst_r_dword | inst_r_word | inst_s | inst_b);
-wire [4:0]rs2_r_addr_b = (rs2_r_ena == 1'b1) ? rs2 : 0;
-
-wire rd_w_ena_b   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
-                          | inst_u_auipc | inst_i_arith_word | inst_r_dword
-                          | inst_u_lui | inst_r_word | inst_i_jalr | inst_j
-                          | inst_i_sys);
-wire [4:0]rd_w_addr_b  = (rd_w_ena == 1'b1) ? rd : 0;
 */
 assign exe_op1 = {64{~rst}} & (
                 ({64{inst_i_load}}        & r_data1)
@@ -256,6 +240,7 @@ wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
 assign mem_w_ena = (rst == 1'b1) ? 0 : inst_save;
 
 
+
 wire inst_addi =   ~opcode[2] & ~opcode[3] & opcode[4] & ~opcode[5] & ~opcode[6]
                  & ~func3[0] & ~func3[1] & ~func3[2];
 
@@ -274,12 +259,10 @@ assign inst_opcode[7] = (  rst == 1'b1 ) ? 0 : 0;
 
 assign rs1_r_ena  = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rs1_r_addr = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rs1 : 0 );
-
 assign rs2_r_ena  = 0;
 assign rs2_r_addr = 0;
 
 assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
-
 
 endmodule
