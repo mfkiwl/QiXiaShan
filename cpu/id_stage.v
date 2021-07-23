@@ -7,10 +7,10 @@
 
 module id_stage(
   input wire rst,
-  input wire [31 : 0]inst,
-  input wire [`REG_BUS]rs1_data,
-  input wire [`REG_BUS]rs2_data,
-  
+  input wire [31 : 0] inst,
+  input wire [`REG_BUS] r_data1,
+  input wire [`REG_BUS] r_data2,
+  input wire [`REG_BUS] inst_addr,
   
   output wire rs1_r_ena,
   output wire [4 : 0]rs1_r_addr,
@@ -21,11 +21,17 @@ module id_stage(
   
   output wire [4 : 0]inst_type,
   output wire [7 : 0]inst_opcode,
-  output wire [`REG_BUS]op1,
-  output wire [`REG_BUS]op2,
+  output wire is_word_opt,
+  output wire [`REG_BUS]exe_op1,
+  output wire [`REG_BUS]exe_op2,
 
   output wire mem_to_reg,
-  output wire mem_w_ena
+  output wire mem_w_ena,
+
+  output wire [`OP_BUS]  op_info,
+  output wire [`ALU_BUS] alu_info,
+  output wire [`BJ_BUS]  bj_info,
+  output wire [`REG_BUS] jmp_imm
 );
 
 
@@ -68,8 +74,8 @@ assign rs2_r_addr = 0;
 assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
 
-assign op1 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rs1_data : 0 );
-assign op2 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? { {52{imm[11]}}, imm } : 0 );
+assign exe_op1 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? r_data1 : 0 );
+assign exe_op2 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? { {52{imm[11]}}, imm } : 0 );
 
 wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
 assign mem_to_reg = (rst == 1'b1) ? 0 : inst_load;

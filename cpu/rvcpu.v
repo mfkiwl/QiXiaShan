@@ -25,15 +25,25 @@ wire rs2_r_ena;
 wire [4 : 0]rs2_r_addr;
 wire rd_w_ena;
 wire [4 : 0]rd_w_addr;
+
 // id_stage -> exe_stage
 wire [4 : 0]inst_type;
 wire [7 : 0]inst_opcode;
-wire [`REG_BUS]op1;
-wire [`REG_BUS]op2;
+wire [`REG_BUS] exe_op1;
+wire [`REG_BUS] exe_op2;
+wire [`OP_BUS] op_info;
+wire [`ALU_BUS] alu_info;
+wire [`BJ_BUS]  bj_info;
+wire is_word_opt;
+
 // id stage -> mem_stage
 wire mem_w_ena;
+
 // id stage -> wb_stage
 wire mem_to_reg;
+
+// id_stage -> if_stage
+wire [`REG_BUS] jmp_imm;
 
 // regfile -> id_stage
 wire [`REG_BUS] r_data1;
@@ -61,29 +71,37 @@ if_stage If_stage(
 id_stage Id_stage(
   .rst(rst),
   .inst(inst),
-  .rs1_data(r_data1),
-  .rs2_data(r_data2),
-  
+  .r_data1(r_data1),
+  .r_data2(r_data2),
+  .inst_addr(inst_addr),
+
   .rs1_r_ena(rs1_r_ena),
   .rs1_r_addr(rs1_r_addr),
   .rs2_r_ena(rs2_r_ena),
   .rs2_r_addr(rs2_r_addr),
   .rd_w_ena(rd_w_ena),
   .rd_w_addr(rd_w_addr),
+
   .inst_type(inst_type),
   .inst_opcode(inst_opcode),
-  .op1(op1),
-  .op2(op2),
+  .is_word_opt(is_word_opt),
+  .exe_op1(exe_op1),
+  .exe_op2(exe_op2),
   .mem_to_reg(mem_to_reg),
-  .mem_w_ena(mem_w_ena)
+  .mem_w_ena(mem_w_ena),
+
+  .op_info(op_info),
+  .alu_info(alu_info),
+  .bj_info(bj_info),
+  .jmp_imm(jmp_imm)
 );
 
 exe_stage Exe_stage(
   .rst(rst),
   .inst_type_i(inst_type),
   .inst_opcode(inst_opcode),
-  .op1(op1),
-  .op2(op2),
+  .exe_op1(exe_op1),
+  .exe_op2(exe_op2),
   
   .inst_type_o(inst_type_o),
   .rd_data(exe_data)

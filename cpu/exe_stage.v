@@ -5,10 +5,10 @@
 
 module exe_stage(
   input wire rst,
-  input wire [4 : 0]inst_type_i,
-  input wire [7 : 0]inst_opcode,
-  input wire [`REG_BUS]op1,
-  input wire [`REG_BUS]op2,
+  input wire [4 : 0] inst_type_i,
+  input wire [7 : 0] inst_opcode,
+  input wire [`REG_BUS] exe_op1,
+  input wire [`REG_BUS] exe_op2,
   
   output wire [4 : 0]inst_type_o,
   output reg  [`REG_BUS]rd_data
@@ -25,7 +25,7 @@ begin
   else
   begin
     case( inst_opcode )
-	  `INST_ADD: begin rd_data = op1 + op2;  end
+	  `INST_ADD: begin rd_data = exe_op1 + exe_op2;  end
 	  default:   begin rd_data = `ZERO_WORD; end
 	endcase
   end
