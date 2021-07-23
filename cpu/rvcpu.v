@@ -53,6 +53,8 @@ wire [`REG_BUS] r_data2;
 wire [4 : 0] inst_type_o;
 // exe_stage -> mem/wb_stage
 wire [`REG_BUS] exe_data;
+// exe_stage -> if_stage
+wire bj_ena;
 
 // mem_stage -> wb_stage
 wire [`REG_BUS] mem_r_data;
@@ -102,9 +104,14 @@ exe_stage Exe_stage(
   .inst_opcode(inst_opcode),
   .exe_op1(exe_op1),
   .exe_op2(exe_op2),
+  .is_word_opt(is_word_opt),
+  .op_info(op_info),
+  .alu_info(alu_info),
+  .bj_info(bj_info),
   
   .inst_type_o(inst_type_o),
-  .rd_data(exe_data)
+  .rd_data(exe_data),
+  .bj_ena(bj_ena)
 );
 
 mem_stage Mem_stage(
