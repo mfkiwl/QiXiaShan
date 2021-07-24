@@ -188,7 +188,7 @@ assign bj_info[`BJ_JAL]  = inst_jal;
 // load-store: 00100; j: 00010;  sys: 00001
 // fence: 01000; b: 10010
 
-/*
+
 assign rs1_r_ena  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
                           | inst_i_arith_word | inst_r_dword | inst_r_word
                           | inst_b | inst_i_jalr | inst_i_sys);
@@ -201,7 +201,7 @@ assign rd_w_ena   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
                           | inst_u_lui | inst_r_word | inst_i_jalr | inst_j
                           | inst_i_sys);
 assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
-*/
+
 assign exe_op1 = {64{~rst}} & (
                 ({64{inst_i_load}}        & r_data1)
               | ({64{inst_i_fence}}       & r_data1)
@@ -241,14 +241,14 @@ assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 
 // I-type
 
-wire [6  : 0]opcode = inst[6  :  0];
+//wire [6  : 0]opcode = inst[6  :  0];
 /*
 wire [4  : 0]rd = inst[11 :  7];
 wire [2  : 0]func3 = inst[14 : 12];
 wire [4  : 0]rs1 = inst[19 : 15];
 wire [11 : 0]imm = inst[31 : 20];
 */
-
+/*
 assign inst_type[4] = ( rst == 1'b1 ) ? 0 : inst_addi;
 
 assign inst_opcode[0] = (  rst == 1'b1 ) ? 0 : inst_addi;
@@ -268,6 +268,6 @@ assign rs2_r_addr = 0;
 assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
 
-
+*/
 
 endmodule
