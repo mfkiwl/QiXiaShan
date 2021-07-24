@@ -201,7 +201,7 @@ assign rd_w_ena   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
                           | inst_u_lui | inst_r_word | inst_i_jalr | inst_j
                           | inst_i_sys);
 assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
-
+*/
 assign exe_op1 = {64{~rst}} & (
                 ({64{inst_i_load}}        & r_data1)
               | ({64{inst_i_fence}}       & r_data1)
@@ -233,7 +233,7 @@ assign exe_op2 = {64{~rst}} & (
 assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
                | ({64{inst_j}} & {{43{immJ[20]}}, immJ})
                | ({64{inst_i_jalr}} & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
-*/
+
 
 
 // I-type
@@ -274,9 +274,6 @@ assign rs2_r_addr = 0;
 
 assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
-
-assign exe_op1 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? r_data1 : 0 );
-assign exe_op2 = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? { {52{imm[11]}}, imm } : 0 );
 
 wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
 assign mem_to_reg = (rst == 1'b1) ? 0 : inst_load;
