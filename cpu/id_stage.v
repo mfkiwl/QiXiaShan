@@ -234,7 +234,10 @@ assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
                | ({64{inst_j}} & {{43{immJ[20]}}, immJ})
                | ({64{inst_i_jalr}} & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
 
-
+wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
+assign mem_to_reg = (rst == 1'b1) ? 0 : inst_i_load;
+wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
+assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 
 // I-type
 /*
@@ -269,9 +272,6 @@ assign rs2_r_addr = 0;
 assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
 
-wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
-assign mem_to_reg = (rst == 1'b1) ? 0 : inst_load;
-wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
-assign mem_w_ena = (rst == 1'b1) ? 0 : inst_save;
+
 
 endmodule
