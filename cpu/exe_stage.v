@@ -21,7 +21,7 @@ module exe_stage(
 
 // alu -> bj
 wire [`BJ_BUS] bj_data;
-
+/*
 exe_stage_alu Exe_stage_alu(
   .rst(rst),
   .op1(exe_op1),
@@ -41,7 +41,7 @@ exe_stage_bj Exe_stage_bj(
 
   .bj_ena(bj_ena)
 );
-
+*/
 assign inst_type_o = inst_type_i;
 
 always@( * )
