@@ -237,8 +237,9 @@ assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
 
 
 // I-type
-/*
+
 wire [6  : 0]opcode = inst[6  :  0];
+/*
 wire [4  : 0]rd = inst[11 :  7];
 wire [2  : 0]func3 = inst[14 : 12];
 wire [4  : 0]rs1 = inst[19 : 15];
