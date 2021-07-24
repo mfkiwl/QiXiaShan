@@ -240,19 +240,15 @@ wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
 assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 
 // I-type
-/*
-wire [6  : 0]opcode = inst[6  :  0];
 
+wire [6  : 0]opcode = inst[6  :  0];
+/*
 wire [4  : 0]rd = inst[11 :  7];
 wire [2  : 0]func3 = inst[14 : 12];
 wire [4  : 0]rs1 = inst[19 : 15];
 wire [11 : 0]imm = inst[31 : 20];
 */
-//wire inst_addi =   ~opcode[2] & ~opcode[3] & opcode[4] & ~opcode[5] & ~opcode[6]
-//                 & ~func3[0] & ~func3[1] & ~func3[2];
 
-// arith inst: 10000; logic: 01000;
-// load-store: 00100; j: 00010;  sys: 000001
 assign inst_type[4] = ( rst == 1'b1 ) ? 0 : inst_addi;
 
 assign inst_opcode[0] = (  rst == 1'b1 ) ? 0 : inst_addi;
