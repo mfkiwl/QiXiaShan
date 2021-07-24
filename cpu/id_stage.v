@@ -237,16 +237,11 @@ assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
 
 
 // I-type
-wire [6  : 0]opcode;
-wire [4  : 0]rd;
-wire [2  : 0]func3;
-wire [4  : 0]rs1;
-wire [11 : 0]imm;
-assign opcode = inst[6  :  0];
-assign rd     = inst[11 :  7];
-assign func3  = inst[14 : 12];
-assign rs1    = inst[19 : 15];
-assign imm    = inst[31 : 20];
+wire [6  : 0]opcode = inst[6  :  0];
+wire [4  : 0]rd = inst[11 :  7];
+wire [2  : 0]func3 = inst[14 : 12];
+wire [4  : 0]rs1 = inst[19 : 15];
+wire [11 : 0]imm = inst[31 : 20];
 
 wire inst_addi =   ~opcode[2] & ~opcode[3] & opcode[4] & ~opcode[5] & ~opcode[6]
                  & ~func3[0] & ~func3[1] & ~func3[2];
