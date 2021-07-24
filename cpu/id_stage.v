@@ -248,7 +248,7 @@ wire [2  : 0]func3 = inst[14 : 12];
 wire [4  : 0]rs1 = inst[19 : 15];
 wire [11 : 0]imm = inst[31 : 20];
 */
-/*
+
 assign inst_type[4] = ( rst == 1'b1 ) ? 0 : inst_addi;
 
 assign inst_opcode[0] = (  rst == 1'b1 ) ? 0 : inst_addi;
@@ -259,7 +259,7 @@ assign inst_opcode[4] = (  rst == 1'b1 ) ? 0 : inst_addi;
 assign inst_opcode[5] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[6] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[7] = (  rst == 1'b1 ) ? 0 : 0;
-
+/*
 assign rs1_r_ena  = ( rst == 1'b1 ) ? 0 : inst_type[4];
 assign rs1_r_addr = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rs1 : 0 );
 assign rs2_r_ena  = 0;
