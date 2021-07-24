@@ -235,7 +235,7 @@ assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 // arith inst, lui, auipc: 10000;
 // load-store: 00100; j: 00010;  sys: 00001
 // fence: 01000; b: 10010
-
+/*
 assign inst_type[4] = ( rst == 1'b1 ) ? 0 : inst_addi;
 
 assign inst_opcode[0] = (  rst == 1'b1 ) ? 0 : inst_addi;
@@ -246,5 +246,5 @@ assign inst_opcode[4] = (  rst == 1'b1 ) ? 0 : inst_addi;
 assign inst_opcode[5] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[6] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[7] = (  rst == 1'b1 ) ? 0 : 0;
-
+*/
 endmodule
