@@ -184,11 +184,6 @@ assign bj_info[`BJ_BGEU] = inst_bgeu;
 assign bj_info[`BJ_JALR] = inst_jalr;
 assign bj_info[`BJ_JAL]  = inst_jal;
 
-// arith inst, lui, auipc: 10000;
-// load-store: 00100; j: 00010;  sys: 00001
-// fence: 01000; b: 10010
-
-
 assign rs1_r_ena  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
                           | inst_i_arith_word | inst_r_dword | inst_r_word
                           | inst_b | inst_i_jalr | inst_i_sys);
@@ -234,20 +229,12 @@ assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
                | ({64{inst_j}} & {{43{immJ[20]}}, immJ})
                | ({64{inst_i_jalr}} & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
 
-wire inst_load = ~opcode[2] & ~opcode[3] & ~opcode[4] & ~opcode[5] & ~opcode[6];
 assign mem_to_reg = (rst == 1'b1) ? 0 : inst_i_load;
-wire inst_save = ~opcode[2] & ~opcode[3] & ~opcode[4] & opcode[5] & ~opcode[6];
 assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 
-// I-type
-
-//wire [6  : 0]opcode = inst[6  :  0];
-/*
-wire [4  : 0]rd = inst[11 :  7];
-wire [2  : 0]func3 = inst[14 : 12];
-wire [4  : 0]rs1 = inst[19 : 15];
-wire [11 : 0]imm = inst[31 : 20];
-*/
+// arith inst, lui, auipc: 10000;
+// load-store: 00100; j: 00010;  sys: 00001
+// fence: 01000; b: 10010
 
 assign inst_type[4] = ( rst == 1'b1 ) ? 0 : inst_addi;
 
@@ -259,15 +246,5 @@ assign inst_opcode[4] = (  rst == 1'b1 ) ? 0 : inst_addi;
 assign inst_opcode[5] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[6] = (  rst == 1'b1 ) ? 0 : 0;
 assign inst_opcode[7] = (  rst == 1'b1 ) ? 0 : 0;
-/*
-assign rs1_r_ena  = ( rst == 1'b1 ) ? 0 : inst_type[4];
-assign rs1_r_addr = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rs1 : 0 );
-assign rs2_r_ena  = 0;
-assign rs2_r_addr = 0;
-
-assign rd_w_ena   = ( rst == 1'b1 ) ? 0 : inst_type[4];
-assign rd_w_addr  = ( rst == 1'b1 ) ? 0 : ( inst_type[4] == 1'b1 ? rd  : 0 );
-
-*/
 
 endmodule
