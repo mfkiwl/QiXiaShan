@@ -49,8 +49,6 @@ wire [`REG_BUS] jmp_imm;
 wire [`REG_BUS] r_data1;
 wire [`REG_BUS] r_data2;
 
-// exe_stage -> other stage
-wire [4 : 0] inst_type_o;
 // exe_stage -> mem/wb_stage
 wire [`REG_BUS] exe_data;
 // exe_stage -> if_stage
@@ -109,7 +107,6 @@ exe_stage Exe_stage(
   .alu_info(alu_info),
   .bj_info(bj_info),
   
-  .inst_type_o(inst_type_o),
   .rd_data(exe_data),
   .bj_ena(bj_ena)
 );

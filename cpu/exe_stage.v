@@ -14,7 +14,6 @@ module exe_stage(
   input wire [`ALU_BUS] alu_info,
   inout wire [`BJ_BUS] bj_info,
 
-  output wire [4 : 0]inst_type_o,
   output reg  [`REG_BUS]rd_data,
   output wire bj_ena
 );
@@ -42,7 +41,6 @@ exe_stage_bj Exe_stage_bj(
   .bj_ena(bj_ena)
 );
 */
-assign inst_type_o = inst_type_i;
 
 always@( * )
 begin
