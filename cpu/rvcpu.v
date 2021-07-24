@@ -27,8 +27,6 @@ wire rd_w_ena;
 wire [4 : 0]rd_w_addr;
 
 // id_stage -> exe_stage
-wire [4 : 0]inst_type;
-wire [7 : 0]inst_opcode;
 wire [`REG_BUS] exe_op1;
 wire [`REG_BUS] exe_op2;
 wire [`OP_BUS] op_info;
@@ -82,8 +80,6 @@ id_stage Id_stage(
   .rd_w_ena(rd_w_ena),
   .rd_w_addr(rd_w_addr),
 
-  .inst_type(inst_type),
-  .inst_opcode(inst_opcode),
   .is_word_opt(is_word_opt),
   .exe_op1(exe_op1),
   .exe_op2(exe_op2),
@@ -98,8 +94,6 @@ id_stage Id_stage(
 
 exe_stage Exe_stage(
   .rst(rst),
-  .inst_type_i(inst_type),
-  .inst_opcode(inst_opcode),
   .exe_op1(exe_op1),
   .exe_op2(exe_op2),
   .is_word_opt(is_word_opt),

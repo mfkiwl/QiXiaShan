@@ -5,8 +5,6 @@
 
 module exe_stage(
   input wire rst,
-  input wire [4 : 0] inst_type_i,
-  input wire [7 : 0] inst_opcode,
   input wire [`REG_BUS] exe_op1,
   input wire [`REG_BUS] exe_op2,
   input wire is_word_opt,
@@ -40,23 +38,5 @@ exe_stage_bj Exe_stage_bj(
 
   .bj_ena(bj_ena)
 );
-
-/*
-always@( * )
-begin
-  if( rst == 1'b1 )
-  begin
-    rd_data = `ZERO_WORD;
-  end
-  else
-  begin
-    case( inst_opcode )
-	  `INST_ADD: begin rd_data = exe_op1 + exe_op2;  end
-	  default:   begin rd_data = `ZERO_WORD; end
-	endcase
-  end
-end
-*/
-
 
 endmodule

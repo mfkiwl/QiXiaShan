@@ -19,8 +19,6 @@ module id_stage(
   output wire rd_w_ena,
   output wire [4 : 0]rd_w_addr,
   
-  output wire [4 : 0]inst_type,
-  output wire [7 : 0]inst_opcode,
   output wire is_word_opt,
   output wire [`REG_BUS]exe_op1,
   output wire [`REG_BUS]exe_op2,
@@ -232,19 +230,4 @@ assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
 assign mem_to_reg = (rst == 1'b1) ? 0 : inst_i_load;
 assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 
-// arith inst, lui, auipc: 10000;
-// load-store: 00100; j: 00010;  sys: 00001
-// fence: 01000; b: 10010
-/*
-assign inst_type[4] = ( rst == 1'b1 ) ? 0 : inst_addi;
-
-assign inst_opcode[0] = (  rst == 1'b1 ) ? 0 : inst_addi;
-assign inst_opcode[1] = (  rst == 1'b1 ) ? 0 : 0;
-assign inst_opcode[2] = (  rst == 1'b1 ) ? 0 : 0;
-assign inst_opcode[3] = (  rst == 1'b1 ) ? 0 : 0;
-assign inst_opcode[4] = (  rst == 1'b1 ) ? 0 : inst_addi;
-assign inst_opcode[5] = (  rst == 1'b1 ) ? 0 : 0;
-assign inst_opcode[6] = (  rst == 1'b1 ) ? 0 : 0;
-assign inst_opcode[7] = (  rst == 1'b1 ) ? 0 : 0;
-*/
 endmodule
