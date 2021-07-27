@@ -1,13 +1,15 @@
 
+//--Sun Jiru, Nanjing University--
+
 `include "defines.v"
 
 module regfile(
-    input  wire clk,
-	input  wire rst,
+  input  wire clk,
+  input  wire rst,
 	
 	input  wire  [4  : 0] w_addr,
 	input  wire  [`REG_BUS] w_data,
-	input  wire 		  w_ena,
+  input  wire 		  w_ena,
 	
 	input  wire  [4  : 0] r_addr1,
 	output reg   [`REG_BUS] r_data1,
@@ -16,7 +18,7 @@ module regfile(
 	input  wire  [4  : 0] r_addr2,
 	output reg   [`REG_BUS] r_data2,
 	input  wire 		  r_ena2
-    );
+  );
 
     // 32 registers
 	reg [`REG_BUS] 	regs[0 : 31];

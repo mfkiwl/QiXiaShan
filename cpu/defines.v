@@ -1,4 +1,6 @@
 
+//--Sun Jiru, Nanjing University--
+
 `timescale 1ns / 1ps
 
 `define ZERO_WORD  64'h00000000_00000000   

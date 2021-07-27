@@ -1,7 +1,7 @@
 
 /* verilator lint_off UNDRIVEN */
 /* verilator lint_off UNUSED */
-//--xuezhen--
+//--Sun Jiru, Nanjing University--
 
 `include "defines.v"
 
