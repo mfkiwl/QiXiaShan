@@ -7,17 +7,19 @@ module regfile(
   input  wire clk,
   input  wire rst,
 	
-	input  wire  [4  : 0] w_addr,
-	input  wire  [`REG_BUS] w_data,
-  input  wire 		  w_ena,
+	input  wire [4  : 0] w_addr,
+	input  wire [`REG_BUS] w_data,
+  input  wire w_ena,
 	
-	input  wire  [4  : 0] r_addr1,
-	output reg   [`REG_BUS] r_data1,
-	input  wire 		  r_ena1,
+	input  wire [4  : 0] r_addr1,
+	output reg  [`REG_BUS] r_data1,
+	input  wire r_ena1,
 	
-	input  wire  [4  : 0] r_addr2,
-	output reg   [`REG_BUS] r_data2,
-	input  wire 		  r_ena2
+	input  wire [4  : 0] r_addr2,
+	output reg  [`REG_BUS] r_data2,
+	input  wire r_ena2,
+
+	output wire [`REG_BUS] regs_o[0:31]
   );
 
     // 32 registers
@@ -84,5 +86,6 @@ module regfile(
 		else
 			r_data2 = `ZERO_WORD;
 	end
-
+  
+  assign regs_o = regs;
 endmodule

@@ -58,6 +58,8 @@ wire [`REG_BUS] jmp_imm;
 // regfile -> id_stage
 wire [`REG_BUS] r_data1;
 wire [`REG_BUS] r_data2;
+// regfile ->difftest
+wire [`REG_BUS] regs[0 : 31];
 
 // exe_stage -> mem/wb_stage
 wire [`REG_BUS] exe_data;
@@ -160,7 +162,9 @@ regfile Regfile(
   .r_ena1(rs1_r_ena),
   .r_addr2(rs2_r_addr),
   .r_data2(r_data2),
-  .r_ena2(rs2_r_ena)
+  .r_ena2(rs2_r_ena),
+
+  .regs_o(regs)
 );
 
 // Difftest
