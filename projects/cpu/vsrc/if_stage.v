@@ -1,6 +1,6 @@
 
 /* verilator lint_off UNUSED */
-//--xuezhen--
+//--Sun Jiru, Nanjing University--
 
 `include "defines.v"
 
@@ -11,25 +11,21 @@ module if_stage(
   output wire [63 : 0]inst_addr,
   output wire         inst_ena
   
-);
+  );
 
-reg [`REG_BUS]pc;
+  reg [`REG_BUS]pc;
 
-// fetch an instruction
-always@( posedge clk )
-begin
-  if( rst == 1'b1 )
+  // fetch an instruction
+  always@( posedge clk )
   begin
-    pc <= `ZERO_WORD ;
+    if( rst == 1'b1 ) begin
+      pc <= `PC_START ;
+    end
+    else begin
+      pc <= pc + 4;
+    end
   end
-  else
-  begin
-    pc <= pc + 4;
-  end
-end
-
-assign inst_addr = pc;
-assign inst_ena  = ( rst == 1'b1 ) ? 0 : 1;
-
-
+  assign inst_addr = pc;
+  assign inst_ena  = ( rst == 1'b1 ) ? 0 : 1;
+  
 endmodule
