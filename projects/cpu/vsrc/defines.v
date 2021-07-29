@@ -30,6 +30,21 @@
 `define BJ_JAL  7
 `define BJ_BUS  7 : 0
 
+`define LOAD_LB  0
+`define LOAD_LH  1
+`define LOAD_LW  2
+`define LOAD_LD  3
+`define LOAD_LBU 4
+`define LOAD_LHU 5
+`define LOAD_LWU 6
+`define LOAD_BUS 6 : 0
+
+`define SAVE_SB  0
+`define SAVE_SH  1
+`define SAVE_SW  2
+`define SAVE_SD  3
+`define SAVE_BUS 3 : 0
+
 `define INST_I_LOAD        0
 `define INST_I_FENCE       1
 `define INST_I_ARITH_DWORD 2

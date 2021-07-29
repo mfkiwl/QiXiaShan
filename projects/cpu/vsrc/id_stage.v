@@ -23,12 +23,14 @@ module id_stage(
   output wire [`REG_BUS]exe_op1,
   output wire [`REG_BUS]exe_op2,
 
-  output wire mem_to_reg,
-  output wire mem_w_ena,
+  output wire mem_rd_ena,
+  output wire mem_wr_ena,
 
   output wire [`OP_BUS]  op_info,
   output wire [`ALU_BUS] alu_info,
   output wire [`BJ_BUS]  bj_info,
+  output wire [`LOAD_BUS] load_info,
+  output wire [`SAVE_BUS] save_info,
   output wire [`REG_BUS] jmp_imm
 );
 
@@ -182,6 +184,19 @@ assign bj_info[`BJ_BGEU] = inst_bgeu;
 assign bj_info[`BJ_JALR] = inst_jalr;
 assign bj_info[`BJ_JAL]  = inst_jal;
 
+assign load_info[`LOAD_LB]  = inst_lb;
+assign load_info[`LOAD_LH]  = inst_lh;
+assign load_info[`LOAD_LW]  = inst_lw;
+assign load_info[`LOAD_LD]  = inst_ld;
+assign load_info[`LOAD_LBU] = inst_lbu;
+assign load_info[`LOAD_LHU] = inst_lhu;
+assign load_info[`LOAD_LWU] = inst_lwu;
+
+assign save_info[`SAVE_SB] = inst_sb;
+assign save_info[`SAVE_SH] = inst_sh;
+assign save_info[`SAVE_SW] = inst_sw;
+assign save_info[`SAVE_SD] = inst_sd;
+
 assign rs1_r_ena  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
                           | inst_i_arith_word | inst_r_dword | inst_r_word
                           | inst_b | inst_i_jalr | inst_i_sys);
@@ -194,6 +209,9 @@ assign rd_w_ena   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
                           | inst_u_lui | inst_r_word | inst_i_jalr | inst_j
                           | inst_i_sys);
 assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
+
+assign mem_rd_ena = ~rst & inst_i_load;
+assign mem_wr_ena = ~rst & inst_s;
 
 assign exe_op1 = {64{~rst}} & (
                 ({64{inst_i_load}}        & r_data1)
@@ -226,8 +244,5 @@ assign exe_op2 = {64{~rst}} & (
 assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
                | ({64{inst_j}} & {{43{immJ[20]}}, immJ})
                | ({64{inst_i_jalr}} & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
-
-assign mem_to_reg = (rst == 1'b1) ? 0 : inst_i_load;
-assign mem_w_ena = (rst == 1'b1) ? 0 : inst_s;
 
 endmodule

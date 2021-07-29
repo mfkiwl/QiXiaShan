@@ -38,19 +38,19 @@ wire [4 : 0]rs2_r_addr;
 wire rd_w_ena;
 wire [4 : 0]rd_w_addr;
 
-// id_stage -> exe_stage
+// id_stage -> exe/mem_stage
 wire [`REG_BUS] exe_op1;
 wire [`REG_BUS] exe_op2;
 wire [`OP_BUS] op_info;
 wire [`ALU_BUS] alu_info;
 wire [`BJ_BUS]  bj_info;
+wire [`LOAD_BUS] load_info;
+wire [`SAVE_BUS] save_info;
 wire is_word_opt;
 
 // id stage -> mem_stage
-wire mem_w_ena;
-
-// id stage -> wb_stage
-wire mem_to_reg;
+wire mem_wr_ena;
+wire mem_rd_ena;
 
 // id_stage -> if_stage
 wire [`REG_BUS] jmp_imm;
@@ -63,28 +63,37 @@ wire [`REG_BUS] regs[0 : 31];
 
 // exe_stage -> mem/wb_stage
 wire [`REG_BUS] exe_data;
+wire [`REG_BUS] mem_addr = exe_data;
 // exe_stage -> if_stage
 wire bj_ena;
 
+// mem_helper -> mem_stage
+wire mem_rd_data;
+
 // mem_stage -> wb_stage
-wire [`REG_BUS] mem_r_data;
+wire [`REG_BUS] mem_data;
+// mem_stage -> mem_helper
+wire [7 : 0] byte_enable;
+wire [`REG_BUS] mem_wr_data;
 
 // wb_stage -> regfile
 wire [`REG_BUS] rd_data;
 
 // Access memory
-reg [63:0] rdata;
-RAMHelper RAMHelper(
-  .clk              (clock),
-  .en               (1),
-  .rIdx             ((pc - `PC_START) >> 3),
-  .rdata            (rdata),
-  .wIdx             (0),
-  .wdata            (0),
-  .wmask            (0),
-  .wen              (0)
+RAM_1W2R RAM_1W2R(
+  .clk(clock),
+  
+  .inst_addr(pc),
+  .inst_ena(1),
+  .inst(inst),
+
+  .mem_wr_ena(mem_wr_ena),
+  .mem_rd_ena(mem_rd_ena),
+  .byte_enable(byte_enable),
+  .mem_addr(mem_addr),
+  .mem_wr_data(mem_wr_data),
+  .mem_rd_data(mem_rd_data)
 );
-assign inst = pc[2] ? rdata[63 : 32] : rdata[31 : 0];
 
 if_stage If_stage(
   .clk(clock),
@@ -111,12 +120,15 @@ id_stage Id_stage(
   .is_word_opt(is_word_opt),
   .exe_op1(exe_op1),
   .exe_op2(exe_op2),
-  .mem_to_reg(mem_to_reg),
-  .mem_w_ena(mem_w_ena),
+  
+  .mem_rd_ena(mem_rd_ena),
+  .mem_wr_ena(mem_wr_ena),
 
   .op_info(op_info),
   .alu_info(alu_info),
   .bj_info(bj_info),
+  .load_info(load_info),
+  .save_info(save_info),
   .jmp_imm(jmp_imm)
 );
 
@@ -135,17 +147,21 @@ exe_stage Exe_stage(
 
 mem_stage Mem_stage(
   .rst(reset),
-  .addr(exe_data),
-  .mem_w_ena(mem_w_ena),
+  .r_data2(r_data2),
+  .load_info(load_info),
+  .save_info(save_info),
+  .mem_rd_data(mem_rd_data),
 
-  .mem_r_data(mem_r_data)
+  .mem_data(mem_data),
+  .mem_wr_data(mem_wr_data),
+  .byte_enable(byte_enable)
 );
 
 wb_stage Wb_stage(
   .rst(reset),
-  .mem_to_reg(mem_to_reg),
+  .mem_to_reg(mem_rd_ena),
   .exe_data(exe_data),
-  .mem_data(mem_r_data),
+  .mem_data(mem_data),
 
   .w_data(rd_data)
 );
