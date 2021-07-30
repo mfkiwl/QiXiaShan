@@ -58,4 +58,5 @@
 `define INST_I_JALR        10
 `define INST_J             11
 `define INST_I_SYS         12
-`define OP_BUS             12 : 0
+`define INST_T             13
+`define OP_BUS             13 : 0
