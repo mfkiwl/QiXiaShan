@@ -18,8 +18,8 @@ module wb_stage (
 assign w_data = (rst == 1'b1) ? 0 : ((mem_to_reg == 1'b1) ? mem_data : exe_data);
     
 assign w_data = {64{~rst}} & (
-  ({64{mem_to_reg}} & mem_data) |
-  ({64{pc_to_reg}} & pc_data) |
+  ({64{mem_to_reg}} & mem_data)         |
+  ({64{pc_to_reg}} & (pc_data + 64'd4)) |
   ({64{exe_to_reg}} & exe_data)
 );
 endmodule
