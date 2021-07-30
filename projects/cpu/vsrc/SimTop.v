@@ -98,9 +98,10 @@ RAM_1W2R RAM_1W2R(
 if_stage If_stage(
   .clk(clock),
   .rst(reset),
+  .bj_ena(bj_ena),
+  .jmp_imm(jmp_imm),
   
-  .inst_addr(pc),
-  .inst_ena(inst_ena)
+  .pc_o(pc)
 );
 
 id_stage Id_stage(
