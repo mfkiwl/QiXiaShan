@@ -105,8 +105,8 @@ wire inst_lwu     = inst_i_load & func3_6;
 wire inst_fence   = inst_i_fence & func3_0;
 wire inst_fence_i = inst_i_fence & func3_1;
 
-wire inst_addi    = inst_i_arith_dword & func3_0 & func7_00;
-wire inst_slli    = inst_i_arith_dword & func3_1;
+wire inst_addi    = inst_i_arith_dword & func3_0;
+wire inst_slli    = inst_i_arith_dword & func3_1 & func7_00;
 wire inst_slti    = inst_i_arith_dword & func3_2;
 wire inst_sltiu   = inst_i_arith_dword & func3_3;
 wire inst_xori    = inst_i_arith_dword & func3_4;
