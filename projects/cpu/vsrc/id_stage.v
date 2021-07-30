@@ -240,7 +240,7 @@ assign exe_op2 = {64{~rst}} & (
               | ({64{inst_i_arith_dword}} & {{52{immI[11]}}, immI})
               | ({64{inst_u_auipc}}       & {{32{immU[19]}}, immU, 12'b0})
               | ({64{inst_i_arith_word}}  & {{52{immI[11]}}, immI})
-              | ({64{inst_s}}             & {{52{immI[11]}}, immI})
+              | ({64{inst_s}}             & {{52{immI[11]}}, immS})
               | ({64{inst_r_dword}}       & r_data2)
               | ({64{inst_u_lui}}         & {{32{immU[19]}}, immU, 12'b0})
               | ({64{inst_r_word}}        & r_data2)
