@@ -151,6 +151,7 @@ mem_stage Mem_stage(
   .r_data2(r_data2),
   .load_info(load_info),
   .save_info(save_info),
+  .mem_addr(mem_addr),
   .mem_rd_data(mem_rd_data),
 
   .mem_data(mem_data),
