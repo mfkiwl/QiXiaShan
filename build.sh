@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="1.4"
+VERSION="1.7"
 
 help() {
     echo "Version v"$VERSION
@@ -34,7 +34,7 @@ create_soft_link() {
 
 build_diff_proj() {
     # Refresh the modification time of the top file, otherwise some changes to the RTL source code will not take effect in next compilation.
-    touch -m `find $PROJECT_PATH/$VSRC_FOLDER/ -name $DIFFTEST_TOP_FILE`
+    touch -m `find $BUILD_PATH -name $DIFFTEST_TOP_FILE` 1>/dev/null 2>&1
     # create soft link ($BUILD_PATH/*.v -> $PROJECT_PATH/$VSRC_FOLDER/*.v)
     create_soft_link $BUILD_PATH $PROJECT_PATH/$VSRC_FOLDER \"*.v\"
     # create soft link ($PROJECT_PATH/difftest -> $OSCPU_PATH/difftest)
@@ -54,19 +54,28 @@ build_proj() {
     cd $PROJECT_PATH
 
     # get all .cpp files
-    CPP_SRC=`find $PROJECT_PATH/$CSRC_FOLDER -name "*.cpp"`
-    
-    # get all rtl subfolders
-    VSRC_FOLDER=`find $VSRC_FOLDER -type d`
-    for SUBFOLDER in ${VSRC_FOLDER[@]}
+    CSRC_LIST=`find $PROJECT_PATH/$CSRC_FOLDER -name "*.cpp"`
+    for CSRC_FILE in ${CSRC_LIST[@]}
     do
-        INCLUDE_RTL_SRC_FOLDER="$INCLUDE_RTL_SRC_FOLDER -I$SUBFOLDER"
+        CSRC_FILES="$CSRC_FILES $CSRC_FILE"
+    done
+    # get all vsrc subfolders
+    VSRC_SUB_FOLDER=`find $VSRC_FOLDER -type d`
+    for SUBFOLDER in ${VSRC_SUB_FOLDER[@]}
+    do
+        INCLUDE_VSRC_FOLDERS="$INCLUDE_VSRC_FOLDERS -I$SUBFOLDER"
+    done
+    # get all csrc subfolders
+    CSRC_SUB_FOLDER=`find $PROJECT_PATH/$CSRC_FOLDER -type d`
+    for SUBFOLDER in ${CSRC_SUB_FOLDER[@]}
+    do
+        INCLUDE_CSRC_FOLDERS="$INCLUDE_CSRC_FOLDERS -I$SUBFOLDER"
     done
 
     # compile
     mkdir $BUILD_FOLDER 1>/dev/null 2>&1
-    eval "verilator --unused-regexp -Wall --cc --exe --trace -O3 $CFLAGS $LDFLAGS -o $PROJECT_PATH/$BUILD_FOLDER/$EMU_FILE \
-        -Mdir $PROJECT_PATH/$BUILD_FOLDER/"emu-compile" $INCLUDE_RTL_SRC_FOLDER --build $V_TOP_FILE $CPP_SRC"
+    eval "verilator --cc --exe --trace --assert -O3 -CFLAGS \"-std=c++11 -Wall $INCLUDE_CSRC_FOLDERS $CFLAGS\" $LDFLAGS -o $PROJECT_PATH/$BUILD_FOLDER/$EMU_FILE \
+        -Mdir $PROJECT_PATH/$BUILD_FOLDER/emu-compile $INCLUDE_VSRC_FOLDERS --build $V_TOP_FILE $CSRC_FILES"
     if [ $? -ne 0 ]; then
         echo "Failed to run verilator!!!"
         exit 1
@@ -93,7 +102,7 @@ CLEAN="false"
 PARAMETERS=
 CFLAGS=
 LDFLAGS=
-GBD="false"
+GDB="false"
 DIFFTEST="false"
 DIFFTEST_FOLDER="difftest"
 DIFFTEST_TOP_FILE="SimTop.v"
@@ -112,7 +121,7 @@ while getopts 'he:bt:sa:f:l:gwcdm:' OPT; do
         a) PARAMETERS="$OPTARG";;
         f) CFLAGS="$OPTARG";;
         l) LDFLAGS="$OPTARG";;
-        g) GBD="true";;
+        g) GDB="true";;
         w) CHECK_WAVE="true";;
         c) CLEAN="true";;
         d) DIFFTEST="true";;
@@ -122,9 +131,6 @@ while getopts 'he:bt:sa:f:l:gwcdm:' OPT; do
 done
 
 if [[ $LDFLAGS ]]; then
-    CFLAGS="-CFLAGS "\"$CFLAGS\"
-fi
-if [[ $CFLAGS ]]; then
     LDFLAGS="-LDFLAGS "\"$LDFLAGS\"
 fi
 
@@ -174,7 +180,7 @@ if [[ "$SIMULATE" == "true" ]]; then
 
     # run simulation program
     echo "Simulating..."
-    if [[ "$GBD" == "true" ]]; then
+    if [[ "$GDB" == "true" ]]; then
         gdb -s $EMU_FILE --args ./$EMU_FILE $PARAMETERS
     else
         ./$EMU_FILE $PARAMETERS
@@ -182,7 +188,7 @@ if [[ "$SIMULATE" == "true" ]]; then
 
     if [ $? -ne 0 ]; then
         echo "Failed to simulate!!!"
-        exit 1
+        FAILED="true"
     fi
 
     cd $OSCPU_PATH
@@ -197,4 +203,8 @@ if [[ "$CHECK_WAVE" == "true" ]]; then
         exit 1
     fi
     cd $OSCPU_PATH
+fi
+
+if [[ "$FAILED" == "true" ]]; then
+    exit 1
 fi
