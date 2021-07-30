@@ -232,7 +232,7 @@ assign exe_op2 = {64{~rst}} & (
                 ({64{inst_i_load}}        & {{52{immI[11]}}, immI})
               | ({64{inst_i_fence}}       & {{52{immI[11]}}, immI})
               | ({64{inst_i_arith_dword}} & {{52{immI[11]}}, immI})
-              | ({64{inst_u_auipc}}       & {{44{immU[19]}}, immU})
+              | ({64{inst_u_auipc}}       & {{32{immU[19]}}, immU, 12'b0})
               | ({64{inst_i_arith_word}}  & {{52{immI[11]}}, immI})
               | ({64{inst_s}}             & {{52{immI[11]}}, immI})
               | ({64{inst_r_dword}}       & r_data2)
@@ -242,9 +242,9 @@ assign exe_op2 = {64{~rst}} & (
               | ({64{inst_i_sys}}         & 64'b0)
              );
 
-assign jmp_imm = ({64{inst_b}} & {{51{immB[12]}}, immB})
-               | ({64{inst_j}} & {{43{immJ[20]}}, immJ})
-               | ({64{inst_i_jalr}} & r_data1 + {{52{immI[11]}}, immI} - inst_addr)
-               | ({64{inst_t}} & 64'b0);
+assign jmp_imm = ({64{inst_b}}       & {{51{immB[12]}}, immB})
+               | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
+               | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr)
+               | ({64{inst_t}}       & 64'b0);
 
 endmodule
