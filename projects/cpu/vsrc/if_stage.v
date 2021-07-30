@@ -27,4 +27,6 @@ module if_stage(
     end
   end
   
+  assign pc_o = pc;
+
 endmodule
