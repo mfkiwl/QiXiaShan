@@ -51,6 +51,9 @@ wire is_word_opt;
 // id stage -> mem_stage
 wire mem_wr_ena;
 wire mem_rd_ena;
+// id stage -> wb stage
+wire pc_to_reg;
+wire exe_to_reg;
 
 // id_stage -> if_stage
 wire [`REG_BUS] jmp_imm;
@@ -75,6 +78,7 @@ wire [`REG_BUS] mem_data;
 // mem_stage -> mem_helper
 wire [7 : 0] byte_enable;
 wire [`REG_BUS] mem_wr_data;
+
 
 // wb_stage -> regfile
 wire [`REG_BUS] rd_data;
@@ -124,6 +128,8 @@ id_stage Id_stage(
   
   .mem_rd_ena(mem_rd_ena),
   .mem_wr_ena(mem_wr_ena),
+  .pc_to_reg(pc_to_reg),
+  .exe_to_reg(exe_to_reg),
 
   .op_info(op_info),
   .alu_info(alu_info),
@@ -162,8 +168,11 @@ mem_stage Mem_stage(
 wb_stage Wb_stage(
   .rst(reset),
   .mem_to_reg(mem_rd_ena),
+  .pc_to_reg(pc_to_reg),
+  .exe_to_reg(exe_to_reg),
   .exe_data(exe_data),
   .mem_data(mem_data),
+  .pc_data(pc),
 
   .w_data(rd_data)
 );

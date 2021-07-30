@@ -25,6 +25,8 @@ module id_stage(
 
   output wire mem_rd_ena,
   output wire mem_wr_ena,
+  output wire pc_to_reg,
+  output wire exe_to_reg,
 
   output wire [`OP_BUS]  op_info,
   output wire [`ALU_BUS] alu_info,
@@ -213,6 +215,10 @@ assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
 
 assign mem_rd_ena = ~rst & inst_i_load;
 assign mem_wr_ena = ~rst & inst_s;
+assign pc_to_reg = ~rst & (inst_jal | inst_jalr);
+assign exe_to_reg = ~rst & (inst_i_fence | inst_i_arith_dword | inst_u_auipc 
+                          | inst_i_arith_word | inst_r_dword | inst_u_lui
+                          | inst_r_word | inst_i_sys);
 
 assign exe_op1 = {64{~rst}} & (
                 ({64{inst_i_load}}        & r_data1)
