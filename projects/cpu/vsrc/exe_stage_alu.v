@@ -127,7 +127,7 @@ module exe_stage_alu(
                       );
   assign alu_output = {is_word_opt ? {32{temp_output[31]}} : temp_output[63 : 32], temp_output[31 : 0]};
   
-  wire eq_res = (|xor_res);
+  wire eq_res = ~(|xor_res);
   assign bj_data[`BJ_BEQ]  = eq_res;
   assign bj_data[`BJ_BNE]  = ~eq_res;
   assign bj_data[`BJ_BLT]  = slt_res[0];
