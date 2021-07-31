@@ -166,8 +166,9 @@ wire inst_csrrwi  = inst_i_sys & func3_5;
 wire inst_csrrsi  = inst_i_sys & func3_6;
 wire inst_csrrci  = inst_i_sys & func3_7;
 
-assign alu_info[`ALU_ADD]  = inst_add  | inst_addi   | inst_addw | inst_auipc 
-                           | inst_lui  | inst_i_load | inst_s | inst_jal | inst_jalr;
+assign alu_info[`ALU_ADD]  = inst_add  | inst_addi   | inst_addw | inst_addiw 
+                           |inst_auipc | inst_lui  | inst_i_load | inst_s 
+                           | inst_jal | inst_jalr;
 assign alu_info[`ALU_SUB]  = inst_sub  | inst_subw   | inst_b;
 assign alu_info[`ALU_SLT]  = inst_slt  | inst_slti   | inst_blt  | inst_bge;
 assign alu_info[`ALU_SLTU] = inst_sltu | inst_sltiu  | inst_bltu | inst_bgeu;
