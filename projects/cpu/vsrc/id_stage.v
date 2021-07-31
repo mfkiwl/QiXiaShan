@@ -88,8 +88,8 @@ wire inst_b             = (opcode == 7'h63);
 wire inst_i_jalr        = (opcode == 7'h67);
 wire inst_j             = (opcode == 7'h6f);
 wire inst_i_sys         = (opcode == 7'h73);
-wire inst_t             = (opcode == 7'h6b); // signal of termination
-assign op_info = {inst_t, inst_i_sys, inst_j, inst_i_jalr, inst_b, inst_r_word, inst_u_lui,
+//wire inst_t             = (opcode == 7'h6b); // signal of termination
+assign op_info = {/*inst_t,*/ inst_i_sys, inst_j, inst_i_jalr, inst_b, inst_r_word, inst_u_lui,
                   inst_r_dword, inst_s, inst_i_arith_word, inst_u_auipc, inst_i_arith_dword, 
                   inst_i_fence, inst_i_load
                  };
@@ -251,7 +251,7 @@ assign exe_op2 = {64{~rst}} & (
 
 assign jmp_imm = ({64{inst_b}}       & {{51{immB[12]}}, immB})
                | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
-               | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr)
-               | ({64{inst_t}}       & 64'b0);
+               | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
+//               | ({64{inst_t}}       & 64'b0);
 
 endmodule
