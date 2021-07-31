@@ -24,9 +24,8 @@ module RAM_1W2R(
   assign inst = inst_addr[2] ? inst_2[63:32] : inst_2[31:0];
 
   // DATA PORT 
-  wire [`REG_BUS] now_rd_data = ram_read_helper(mem_rd_ena, {3'b000,(mem_addr-`PC_START)>>3});
     
-  assign mem_rd_data = mem_addr[2] ? {now_rd_data[63:0]} : {now_rd_data[31:0],now_rd_data[63:32]};
+  assign mem_rd_data = ram_read_helper(mem_rd_ena, {3'b000,(mem_addr-`PC_START)>>3});
 
   // 掩码转换
   wire [`REG_BUS] wmask = { {8{byte_enable[7]}},

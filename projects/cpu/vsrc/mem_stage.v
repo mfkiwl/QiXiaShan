@@ -30,7 +30,7 @@ wire op_lbu = load_info[`LOAD_LBU];
 wire op_lhu = load_info[`LOAD_LHU];
 wire op_lwu = load_info[`LOAD_LWU];
 
-wire [`REG_BUS] mem_part = mem_rd_data >> mem_addr[2 : 0];
+wire [`REG_BUS] mem_part = mem_rd_data >> (mem_addr[2 : 0] << 3);
 
 assign mem_data = {64{~rst}} & (
                   ({64{op_lb}} & {{56{mem_part[7 ]}}, mem_part[7  : 0]}) |

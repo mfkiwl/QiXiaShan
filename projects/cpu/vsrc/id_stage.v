@@ -201,8 +201,8 @@ assign save_info[`SAVE_SW] = inst_sw;
 assign save_info[`SAVE_SD] = inst_sd;
 
 assign rs1_r_ena  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
-                          | inst_i_arith_word | inst_r_dword | inst_r_word
-                          | inst_b | inst_i_jalr | inst_i_sys | inst_s);
+                          | inst_i_arith_word | inst_s | inst_r_dword 
+                          | inst_r_word | inst_b | inst_i_jalr | inst_i_sys);
 assign rs1_r_addr = (rs1_r_ena == 1'b1) ? rs1 : 0;
 assign rs2_r_ena  = ~rst & (inst_r_dword | inst_r_word | inst_s | inst_b);
 assign rs2_r_addr = (rs2_r_ena == 1'b1) ? rs2 : 0;
