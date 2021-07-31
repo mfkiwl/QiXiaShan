@@ -120,7 +120,7 @@ module exe_stage_alu(
                     | ({64{op_sra}}    & sra_res)
                     | ({64{op_slt}}    & slt_res)
                     | ({64{op_sltu}}   & sltu_res)
-                    | ({64{op_addsub}} & add_res[63 : 0])
+                    | ({64{op_add | op_sub}} & add_res[63 : 0])
                     | ({64{op_xor}}    & xor_res)
                     | ({64{op_or}}     & or_res)
                     | ({64{op_and}}    & and_res)
