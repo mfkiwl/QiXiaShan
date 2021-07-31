@@ -14,7 +14,7 @@ module RAM_1W2R(
   input [7:0]byte_enable,
   input [`REG_BUS]mem_addr,
   input [`REG_BUS]mem_wr_data,
-  output reg [`REG_BUS]mem_rd_data
+  output [`REG_BUS]mem_rd_data
 );
 
   // INST PORT
