@@ -41,7 +41,7 @@ module RAM_1W2R(
   wire [`REG_BUS] wr_data = {mem_wr_data[31:0],mem_rd_data[63:32]};
 
   always @(posedge clk) begin
-    ram_write_helper((mem_addr+`PC_START)>>3, wr_data, wmask, mem_wr_ena);
+    ram_write_helper((mem_addr-`PC_START)>>3, wr_data, wmask, mem_wr_ena);
   end
 
 endmodule
