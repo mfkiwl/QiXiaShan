@@ -71,7 +71,7 @@ wire [`REG_BUS] mem_addr = exe_data;
 wire bj_ena;
 
 // mem_helper -> mem_stage
-wire mem_rd_data;
+wire [`REG_BUS] mem_rd_data;
 
 // mem_stage -> wb_stage
 wire [`REG_BUS] mem_data;
