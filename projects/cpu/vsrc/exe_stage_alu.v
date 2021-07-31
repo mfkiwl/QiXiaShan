@@ -100,6 +100,18 @@ module exe_stage_alu(
   wire [`REG_BUS] or_res  = op1 | op2;
   wire [`REG_BUS] and_res = op1 & op2;
   
+  wire [`REG_BUS] debug =  ( 
+                      ({64{op_sll}}    & sll_res)
+                    | ({64{op_srl}}    & srl_res)
+                    | ({64{op_sra}}    & sra_res)
+                    | ({64{op_slt}}    & slt_res)
+                    | ({64{op_sltu}}   & sltu_res)
+                    | ({64{op_addsub}} & add_res[63 : 0])
+                    | ({64{op_xor}}    & xor_res)
+                    | ({64{op_or}}     & or_res)
+                    | ({64{op_and}}    & and_res)
+                      );
+
   wire [`REG_BUS] temp_output = {64{~rst}} & ( 
                       ({64{op_sll}}    & sll_res)
                     | ({64{op_srl}}    & srl_res)
