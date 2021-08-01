@@ -121,8 +121,8 @@ wire inst_auipc   = inst_u_auipc;
 
 wire inst_addiw   = inst_i_arith_word & func3_0;
 wire inst_slliw   = inst_i_arith_word & func3_1;
-wire inst_srliw   = inst_i_arith_word & func3_5 & func7_00;
-wire inst_sraiw   = inst_i_arith_word & func3_5 & func7_20;
+wire inst_srliw   = inst_i_arith_word & func3_5 & (func7[6 : 1] == 6'h00);
+wire inst_sraiw   = inst_i_arith_word & func3_5 & (func7[6 : 1] == 6'h10);
 
 wire inst_sb      = inst_s & func3_0;
 wire inst_sh      = inst_s & func3_1;
