@@ -77,9 +77,10 @@ module exe_stage_alu(
     shifter_res[56],shifter_res[57],shifter_res[58],shifter_res[59],
     shifter_res[60],shifter_res[61],shifter_res[62],shifter_res[63]
                  };
-  wire [`REG_BUS] eff_mask = (~(64'b0)) >> shifter_in2;
-  wire [`REG_BUS] sra_res =
-               (srl_res & eff_mask) | ({64{op1[63]}} & (~eff_mask));
+  wire [`REG_BUS] eff_mask = (is_word_opt ? 64'hffffffff : ~(64'b0)) >> shifter_in2;
+  wire [`REG_BUS] sra_res = (srl_res & eff_mask) | (
+    ((is_word_opt ? {32'b0, {32{op1[31]}}} : {64{op1[63]}}) & (~eff_mask))
+  );
 
   // add & sub operation
   wire temp_add = op_add;
