@@ -87,7 +87,7 @@ module exe_stage_alu(
   wire op_addsub = temp_add | temp_sub;
   wire op_unsigned = op_sltu;
   wire [64 : 0] adder_op1 = {~op_unsigned & op1[63], op1};
-  wire [64 : 0] adder_op2 = {~op_unsigned & op1[63], op2};
+  wire [64 : 0] adder_op2 = {~op_unsigned & op2[63], op2};
   wire [64 : 0] adder_in1 = {65{op_addsub}} & adder_op1;
   wire [64 : 0] adder_in2 = {65{op_addsub}} & (temp_sub ? (~adder_op2) : (adder_op2));
   wire [64 : 0] adder_cin = temp_sub ? 65'b1 : 65'b0;
