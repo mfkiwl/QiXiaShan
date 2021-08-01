@@ -53,7 +53,7 @@ module exe_stage_alu(
     op1[60], op1[61], op1[62],shifter_op1[63]
                  } : shifter_op1
           );
-  wire [4 : 0] shifter_in2 = {5{op_shift}} & op2[4 : 0];
+  wire [5 : 0] shifter_in2 = {6{op_shift}} & op2[5 : 0];
 
   wire [`REG_BUS] shifter_res = (shifter_in1 << shifter_in2);
 
