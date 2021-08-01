@@ -175,9 +175,9 @@ assign alu_info[`ALU_SLTU] = inst_sltu | inst_sltiu  | inst_bltu | inst_bgeu;
 assign alu_info[`ALU_XOR]  = inst_xor  | inst_xori   | inst_beq  | inst_bne;
 assign alu_info[`ALU_OR]   = inst_or   | inst_ori;
 assign alu_info[`ALU_AND]  = inst_and  | inst_andi;
-assign alu_info[`ALU_SLL]  = inst_sll  | inst_slli   | inst_sllw;
-assign alu_info[`ALU_SRL]  = inst_srl  | inst_srli   | inst_srlw;
-assign alu_info[`ALU_SRA]  = inst_sra  | inst_srai   | inst_sraw;
+assign alu_info[`ALU_SLL]  = inst_sll  | inst_slli   | inst_sllw | inst_slliw;
+assign alu_info[`ALU_SRL]  = inst_srl  | inst_srli   | inst_srlw | inst_srliw;
+assign alu_info[`ALU_SRA]  = inst_sra  | inst_srai   | inst_sraw | inst_sraiw;
 
 assign bj_info[`BJ_BEQ]  = inst_beq;
 assign bj_info[`BJ_BNE]  = inst_bne;
