@@ -56,6 +56,6 @@ assign byte_enable[5] = (op_sb & addr_5) | (op_sh & addr_4) | (op_sw & addr_4) |
 assign byte_enable[6] = (op_sb & addr_6) | (op_sh & addr_6) | (op_sw & addr_4) | (op_sd & addr_0);
 assign byte_enable[7] = (op_sb & addr_7) | (op_sh & addr_6) | (op_sw & addr_4) | (op_sd & addr_0);
 
-assign mem_wr_data = r_data2;
+assign mem_wr_data = r_data2 << ({mem_addr[2 : 0], 3'b0});
 
 endmodule
