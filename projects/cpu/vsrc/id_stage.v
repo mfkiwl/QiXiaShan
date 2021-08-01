@@ -226,11 +226,11 @@ assign exe_op1 = {64{~rst}} & (
               | ({64{inst_i_fence}}       & r_data1)
               | ({64{inst_i_arith_dword}} & r_data1)
               | ({64{inst_u_auipc}}       & inst_addr)
-              | ({64{inst_i_arith_word}}  & r_data1)
+              | ({64{inst_i_arith_word}}  & r_data1 & 64'h0000ffff)
               | ({64{inst_s}}             & r_data1)
               | ({64{inst_r_dword}}       & r_data1)
               | ({64{inst_u_lui}}         & 64'b0)
-              | ({64{inst_r_word}}        & r_data1)
+              | ({64{inst_r_word}}        & r_data1 & 64'h0000ffff)
               | ({64{inst_b}}             & r_data1)
               | ({64{inst_i_sys}}         & r_data1)
              );
