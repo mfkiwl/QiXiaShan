@@ -110,6 +110,7 @@ if_stage If_stage(
 
 id_stage Id_stage(
   .rst(reset),
+  .clk(clock),
   .inst(inst),
   .r_data1(r_data1),
   .r_data2(r_data2),
