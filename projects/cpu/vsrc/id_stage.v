@@ -260,7 +260,7 @@ assign jmp_imm = ({64{inst_b}}       & {{51{immB[12]}}, immB})
 
 always @(posedge clk) begin
   if (inst_putch) begin
-    $write("%c", exe_op1);
+    $write("%c", exe_op1[7 : 0]);
   end
 end
 
