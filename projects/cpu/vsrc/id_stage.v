@@ -90,8 +90,8 @@ wire inst_i_jalr        = (opcode == 7'h67);
 wire inst_j             = (opcode == 7'h6f);
 wire inst_i_sys         = (opcode == 7'h73);
 //wire inst_t             = (opcode == 7'h6b); // signal of termination
-wire inst_putch         = (opcode == 7'h53); //signal of putch
-assign op_info = {/*inst_t,*/ inst_i_sys, inst_j, inst_i_jalr, inst_b, inst_r_word, inst_u_lui,
+wire inst_putch         = (opcode == 7'h7b); //signal of putch
+assign op_info = {inst_putch, inst_i_sys, inst_j, inst_i_jalr, inst_b, inst_r_word, inst_u_lui,
                   inst_r_dword, inst_s, inst_i_arith_word, inst_u_auipc, inst_i_arith_dword, 
                   inst_i_fence, inst_i_load
                  };
