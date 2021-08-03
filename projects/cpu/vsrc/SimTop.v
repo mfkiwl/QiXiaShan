@@ -221,7 +221,7 @@ always @(posedge clock) begin
     // Skip comparison of the first instruction
     // Because the result required to commit cannot be calculated in time before first InstrCommit during verilator simulation
     // Maybe you can avoid it in pipeline
-    skip = (pc == `PC_START) /*| (op_info[`INST_PUTCH])*/;
+    skip = (pc == `PC_START) | (op_info[`INST_PUTCH]);
     
     cycleCnt += 1;
     instrCnt += 1;
