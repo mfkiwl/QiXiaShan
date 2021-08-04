@@ -257,11 +257,11 @@ assign jmp_imm = ({64{inst_b}}       & {{51{immB[12]}}, immB})
                | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
                | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
 //               | ({64{inst_t}}       & 64'b0);
-/*
+
 always @(posedge clk) begin
   if (inst_putch) begin
     $write("%c", exe_op1[7 : 0]);
   end
 end
-*/
+
 endmodule
