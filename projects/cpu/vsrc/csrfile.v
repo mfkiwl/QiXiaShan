@@ -3,15 +3,16 @@
 
 `include "defines.v"
 
-module csr(
-  input clk;
-  input rst;
-  input csr_wr_ena;
-  input csr_rd_ena;
-  input [11 : 0] csr_idx;
-  input [`REG_BUS] csr_wr_data;
+module csrfile(
+  input clk,
+  input rst,
+  input csr_wr_ena,
+  input csr_rd_ena,
+  input [11 : 0] csr_idx,
+  input [`REG_BUS] csr_wr_data,
 
-  output [`REG_BUS] csr_rd_data;
+  output [`REG_BUS] csr_rd_data,
+  output [`REG_BUS] csr_o [`CSR_BUS]
   );
 
   // 0x301 Machine ISA Register
@@ -48,7 +49,7 @@ module csr(
     ,1'b0 //              0 A Atomic extension
   };
 
-  wire sel_mtvec = (csr_idx == 12'h305);
+  assign csr_o [`CSR_MISA] = csr_misa;
   
   // 0xB00 Cycle Counter
   wire sel_mcycle = (csr_idx == 12'hb00);
@@ -68,25 +69,31 @@ module csr(
     end
   end
 
+  assign csr_o [`CSR_MCYCLE] = csr_mcycle;
+
   // 0xF11 Machine Vendor ID Register
   wire sel_mvendorid = (csr_idx == 12'hf11);
   wire rd_mvendorid = (csr_rd_ena & sel_mvendorid);
   wire [`REG_BUS] csr_mvendorid = `ZERO_WORD;
+  assign csr_o [`CSR_MVENDORID] = csr_mvendorid;
   
   // 0xF12 Machine Architecture ID Register
   wire sel_marchid= (csr_idx == 12'hf12);
   wire rd_marchid = (csr_rd_ena & sel_marchid);
   wire [`REG_BUS] csr_marchid = `ZERO_WORD;
+  assign csr_o [`CSR_MARCHID] = csr_marchid;
   
   // 0xF13 Machine Implementation ID Register
   wire sel_mimpid= (csr_idx == 12'hf13);
   wire rd_mimpid = (csr_rd_ena & sel_mimpid);
   wire [`REG_BUS] csr_mimpid = `ZERO_WORD;
+  assign csr_o [`CSR_MIMPID] = csr_mimpid;
 
   // 0xF14 Hart ID Register
   wire sel_mhartid= (csr_idx == 12'hf14);
   wire rd_mhartid = (csr_rd_ena & sel_mhartid);
   wire [`REG_BUS] csr_mhartid = `ZERO_WORD;
+  assign csr_o [`CSR_MHARTID] = csr_mhartid;
 
   assign csr_rd_data = {64{~rst}} & (
       ({64{rd_misa}}      & csr_misa)
@@ -96,4 +103,5 @@ module csr(
     | ({64{rd_mimpid}}    & csr_mimpid)
     | ({64{rd_mhartid}}   & csr_mhartid)
   );
+ 
 endmodule

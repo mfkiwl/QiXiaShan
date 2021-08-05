@@ -11,6 +11,7 @@ module id_stage(
   input wire [31 : 0] inst,
   input wire [`REG_BUS] r_data1,
   input wire [`REG_BUS] r_data2,
+  input wire [`REG_BUS] csr_data,
   input wire [`REG_BUS] inst_addr,
   
   output wire rs1_r_ena,
@@ -28,6 +29,8 @@ module id_stage(
   output wire mem_wr_ena,
   output wire pc_to_reg,
   output wire exe_to_reg,
+  output wire csr_rd_ena,
+  output wire csr_wr_ena,
 
   output wire [`OP_BUS]  op_info,
   output wire [`ALU_BUS] alu_info,
@@ -38,15 +41,17 @@ module id_stage(
 );
 
 // all types
-wire [6 : 0] opcode = inst[6 : 0];
-wire [4 : 0] rd = inst[11 :  7];
-wire [2 : 0] func3 = inst[14 : 12];
-wire [4 : 0] rs1 = inst[19 : 15];
+wire [6  : 0] opcode = inst[6 : 0];
+wire [4  : 0] rd = inst[11 :  7];
+wire [2  : 0] func3 = inst[14 : 12];
+wire [4  : 0] rs1 = inst[19 : 15];
 // R-type
-wire [4 : 0] rs2 = inst[24 : 20];
-wire [6 : 0] func7 = inst[31 : 25];
+wire [4  : 0] rs2 = inst[24 : 20];
+wire [6  : 0] func7 = inst[31 : 25];
 // I-type
 wire [11 : 0] immI = inst[31 : 20];
+wire [4  : 0] zimm = rs1;
+wire [11 : 0] csr_idx = immI;
 // S-type
 wire [11 : 0] immS = {inst[31 : 25], inst[11 : 7]};
 // B-type
@@ -89,11 +94,15 @@ wire inst_b             = (opcode == 7'h63);
 wire inst_i_jalr        = (opcode == 7'h67);
 wire inst_j             = (opcode == 7'h6f);
 wire inst_i_sys         = (opcode == 7'h73);
+wire inst_i_exp         = inst_i_sys & func3_0;
+wire inst_i_csr_imm     = inst_i_sys & (func3[2] == 1) & ~func3_0;
+wire inst_i_csr_reg     = inst_i_sys & (func3[2] == 0) & ~func3_0;
 //wire inst_t             = (opcode == 7'h6b); // signal of termination
 wire inst_putch         = (opcode == 7'h7b); //signal of putch
-assign op_info = {inst_putch, inst_i_sys, inst_j, inst_i_jalr, inst_b, inst_r_word, inst_u_lui,
-                  inst_r_dword, inst_s, inst_i_arith_word, inst_u_auipc, inst_i_arith_dword, 
-                  inst_i_fence, inst_i_load
+assign op_info = {inst_putch, inst_i_csr_reg, inst_i_csr_imm, inst_i_exp, inst_j, 
+                  inst_i_jalr, inst_b, inst_r_word, inst_u_lui, inst_r_dword, inst_s, 
+                  inst_i_arith_word, inst_u_auipc, inst_i_arith_dword, inst_i_fence, 
+                  inst_i_load
                  };
 assign is_word_opt = inst_r_word | inst_i_arith_word;
 
@@ -159,14 +168,14 @@ wire inst_bgeu    = inst_b & func3_7;
 
 wire inst_jalr    = inst_i_jalr;
 wire inst_jal     = inst_j;
-wire inst_ecall   = inst_i_sys & func3_0 & imm12_000;
-wire inst_ebreak  = inst_i_sys & func3_0 & imm12_001;
-wire inst_csrrw   = inst_i_sys & func3_1;
-wire inst_csrrs   = inst_i_sys & func3_2;
-wire inst_csrrc   = inst_i_sys & func3_3;
-wire inst_csrrwi  = inst_i_sys & func3_5;
-wire inst_csrrsi  = inst_i_sys & func3_6;
-wire inst_csrrci  = inst_i_sys & func3_7;
+wire inst_ecall   = inst_i_exp     & imm12_000;
+wire inst_ebreak  = inst_i_exp     & imm12_001;
+wire inst_csrrw   = inst_i_csr_reg & func3_1;
+wire inst_csrrs   = inst_i_csr_reg & func3_2;
+wire inst_csrrc   = inst_i_csr_reg & func3_3;
+wire inst_csrrwi  = inst_i_csr_imm & func3_5;
+wire inst_csrrsi  = inst_i_csr_imm & func3_6;
+wire inst_csrrci  = inst_i_csr_imm & func3_7;
 
 assign alu_info[`ALU_ADD]  = inst_add  | inst_addi   | inst_addw | inst_addiw 
                            |inst_auipc | inst_lui  | inst_i_load | inst_s 
@@ -205,7 +214,7 @@ assign save_info[`SAVE_SD] = inst_sd;
 
 assign rs1_r_ena  = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword 
                           | inst_i_arith_word | inst_s | inst_r_dword 
-                          | inst_r_word | inst_b | inst_i_jalr | inst_i_sys
+                          | inst_r_word | inst_b | inst_i_jalr | inst_i_csr_reg
                           | inst_putch);
 assign rs1_r_addr = (rs1_r_ena == 1'b1) ? rs1 : 0;
 assign rs2_r_ena  = ~rst & (inst_r_dword | inst_r_word | inst_s | inst_b);
@@ -214,7 +223,7 @@ assign rs2_r_addr = (rs2_r_ena == 1'b1) ? rs2 : 0;
 assign rd_w_ena   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
                           | inst_u_auipc | inst_i_arith_word | inst_r_dword
                           | inst_u_lui | inst_r_word | inst_i_jalr | inst_j
-                          | inst_i_sys);
+                          | inst_i_csr_imm | inst_i_csr_reg);
 assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
 
 assign mem_rd_ena = ~rst & inst_i_load;
@@ -222,7 +231,9 @@ assign mem_wr_ena = ~rst & inst_s;
 assign pc_to_reg = ~rst & (inst_jal | inst_jalr);
 assign exe_to_reg = ~rst & (inst_i_fence | inst_i_arith_dword | inst_u_auipc 
                           | inst_i_arith_word | inst_r_dword | inst_u_lui
-                          | inst_r_word | inst_i_sys);
+                          | inst_r_word);
+assign csr_rd_ena = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
+assign csr_wr_ena = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
 
 assign exe_op1 = {64{~rst}} & (
                 ({64{inst_i_load}}        & r_data1)
@@ -235,7 +246,8 @@ assign exe_op1 = {64{~rst}} & (
               | ({64{inst_u_lui}}         & 64'b0)
               | ({64{inst_r_word}}        & r_data1 & 64'hffffffff)
               | ({64{inst_b}}             & r_data1)
-              | ({64{inst_i_sys}}         & r_data1)
+              | ({64{inst_i_csr_imm}}     & {59'b0, zimm})
+              | ({64{inst_i_csr_reg}}     & r_data1)
               | ({64{inst_putch}}         & r_data1)
              );
 
@@ -250,13 +262,14 @@ assign exe_op2 = {64{~rst}} & (
               | ({64{inst_u_lui}}         & {{32{immU[19]}}, immU, 12'b0})
               | ({64{inst_r_word}}        & r_data2 & 64'hffffffff)
               | ({64{inst_b}}             & r_data2)
-              | ({64{inst_i_sys}}         & 64'b0)
+              | ({64{inst_i_csr_imm}}     & csr_data)
+              | ({64{inst_i_csr_reg}}     & csr_data)
              );
 
-assign jmp_imm = ({64{inst_b}}       & {{51{immB[12]}}, immB})
-               | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
-               | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
-//               | ({64{inst_t}}       & 64'b0);
+assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
+              | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
+              | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
+//              | ({64{inst_t}}       & 64'b0);
 
 always @(posedge clk) begin
   if (inst_putch) begin

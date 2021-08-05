@@ -37,6 +37,10 @@ wire rs2_r_ena;
 wire [4 : 0]rs2_r_addr;
 wire rd_w_ena;
 wire [4 : 0]rd_w_addr;
+// id_stage -> csrfile
+wire csr_wr_ena;
+wire csr_rd_ena;
+wire [11 : 0] csr_idx;
 
 // id_stage -> exe/mem_stage
 wire [`REG_BUS] exe_op1;
@@ -64,9 +68,15 @@ wire [`REG_BUS] r_data2;
 // regfile ->difftest
 wire [`REG_BUS] regs[0 : 31];
 
+// csrfile -> id/wb_stage
+wire [`REG_BUS] csr_rd_data;
+// csrfile -> difftest
+wire [`REG_BUS] csr_o[`CSR_BUS];
+
 // exe_stage -> mem/wb_stage
 wire [`REG_BUS] exe_data;
 wire [`REG_BUS] mem_addr = exe_data;
+wire [`REG_BUS] csr_wr_data;
 // exe_stage -> if_stage
 wire bj_ena;
 
@@ -114,6 +124,7 @@ id_stage Id_stage(
   .inst(inst),
   .r_data1(r_data1),
   .r_data2(r_data2),
+  .csr_data(csr_rd_data),
   .inst_addr(pc),
 
   .rs1_r_ena(rs1_r_ena),
@@ -131,6 +142,8 @@ id_stage Id_stage(
   .mem_wr_ena(mem_wr_ena),
   .pc_to_reg(pc_to_reg),
   .exe_to_reg(exe_to_reg),
+  .csr_rd_ena(csr_rd_ena),
+  .csr_wr_ena(csr_wr_ena),
 
   .op_info(op_info),
   .alu_info(alu_info),
@@ -171,9 +184,11 @@ wb_stage Wb_stage(
   .mem_to_reg(mem_rd_ena),
   .pc_to_reg(pc_to_reg),
   .exe_to_reg(exe_to_reg),
+  .csr_to_reg(csr_rd_ena),
   .exe_data(exe_data),
   .mem_data(mem_data),
   .pc_data(pc),
+  .csr_data(csr_rd_data),
 
   .w_data(rd_data)
 );
@@ -195,7 +210,17 @@ regfile Regfile(
   .regs_o(regs)
 );
 
+csrfile CSRfile(
+  .clk(clock),
+  .rst(reset),
+  .csr_wr_ena(csr_wr_ena),
+  .csr_rd_ena(csr_rd_ena),
+  .csr_idx(csr_idx),
+  .csr_wr_data(exe_data),
 
+  .csr_rd_data(csr_rd_data),
+  .csr_o(csr_o)
+);
 
 // Difftest
 reg cmt_wen;

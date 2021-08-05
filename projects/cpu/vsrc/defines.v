@@ -57,6 +57,16 @@
 `define INST_B             9
 `define INST_I_JALR        10
 `define INST_J             11
-`define INST_I_SYS         12
-`define INST_PUTCH             13
-`define OP_BUS             13 : 0
+`define INST_I_EXP         12
+`define INST_I_CSR_IMM     13
+`define INST_I_CSR_REG     14
+`define INST_PUTCH         15
+`define OP_BUS             15 : 0
+
+`define CSR_MISA       0
+`define CSR_MCYCLE     1
+`define CSR_MVENDORID   2
+`define CSR_MARCHID    3
+`define CSR_MIMPID     4
+`define CSR_MHARTID    5
+`define CSR_BUS        5 : 0
