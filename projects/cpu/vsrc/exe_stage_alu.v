@@ -115,8 +115,8 @@ module exe_stage_alu(
                     | ({64{op_xor}}    & xor_res)
                     | ({64{op_or}}     & or_res)
                     | ({64{op_and}}    & and_res)
-                    | ({64{andn_res}}  & andn_res)
-                    | ({64{wri_res}}   & wri_res)
+                    | ({64{op_andn}}  & andn_res)
+                    | ({64{op_wri}}   & wri_res)
                       );
   assign alu_output = {is_word_opt ? {32{temp_output[31]}} : temp_output[63 : 32], temp_output[31 : 0]};
   
