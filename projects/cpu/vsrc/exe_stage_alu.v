@@ -25,6 +25,8 @@ module exe_stage_alu(
   wire op_sll  = alu_info[`ALU_SLL];
   wire op_srl  = alu_info[`ALU_SRL];
   wire op_sra  = alu_info[`ALU_SRA];
+  wire op_andn = alu_info[`ALU_ANDN];
+  wire op_wri  = alu_info[`ALU_WRI];
 
   // left-shifter and right-shifter
   wire op_shift = op_sll | op_srl | op_sra;
@@ -100,20 +102,8 @@ module exe_stage_alu(
   wire [`REG_BUS] xor_res = op1 ^ op2;
   wire [`REG_BUS] or_res  = op1 | op2;
   wire [`REG_BUS] and_res = op1 & op2;
-  
-  wire [`REG_BUS] debug1 = 
-                      ({64{op_sll}}    & sll_res)
-                    | ({64{op_srl}}    & srl_res)
-                    | ({64{op_sra}}    & sra_res)
-                    | ({64{op_slt}}    & slt_res)
-                    | ({64{op_sltu}}   & sltu_res)
-                    ;
-  wire [`REG_BUS] debug2 = 
-                     ({64{op_addsub}} & add_res[63 : 0])
-                    | ({64{op_xor}}    & xor_res)
-                    | ({64{op_or}}     & or_res)
-                    | ({64{op_and}}    & and_res)
-                    ;
+  wire [`REG_BUS] andn_res = op1 & ~op2;
+  wire [`REG_BUS] wri_res = op2;
 
   wire [`REG_BUS] temp_output = {64{~rst}} & ( 
                       ({64{op_sll}}    & sll_res)
@@ -125,6 +115,8 @@ module exe_stage_alu(
                     | ({64{op_xor}}    & xor_res)
                     | ({64{op_or}}     & or_res)
                     | ({64{op_and}}    & and_res)
+                    | ({64{andn_res}}  & andn_res)
+                    | ({64{wri_res}}   & wri_res)
                       );
   assign alu_output = {is_word_opt ? {32{temp_output[31]}} : temp_output[63 : 32], temp_output[31 : 0]};
   

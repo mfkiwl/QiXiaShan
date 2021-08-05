@@ -177,18 +177,20 @@ wire inst_csrrwi  = inst_i_csr_imm & func3_5;
 wire inst_csrrsi  = inst_i_csr_imm & func3_6;
 wire inst_csrrci  = inst_i_csr_imm & func3_7;
 
-assign alu_info[`ALU_ADD]  = inst_add  | inst_addi   | inst_addw | inst_addiw 
-                           |inst_auipc | inst_lui  | inst_i_load | inst_s 
-                           | inst_jal | inst_jalr;
-assign alu_info[`ALU_SUB]  = inst_sub  | inst_subw   | inst_b;
-assign alu_info[`ALU_SLT]  = inst_slt  | inst_slti   | inst_blt  | inst_bge;
-assign alu_info[`ALU_SLTU] = inst_sltu | inst_sltiu  | inst_bltu | inst_bgeu;
-assign alu_info[`ALU_XOR]  = inst_xor  | inst_xori   | inst_beq  | inst_bne;
-assign alu_info[`ALU_OR]   = inst_or   | inst_ori;
-assign alu_info[`ALU_AND]  = inst_and  | inst_andi;
-assign alu_info[`ALU_SLL]  = inst_sll  | inst_slli   | inst_sllw | inst_slliw;
-assign alu_info[`ALU_SRL]  = inst_srl  | inst_srli   | inst_srlw | inst_srliw;
-assign alu_info[`ALU_SRA]  = inst_sra  | inst_srai   | inst_sraw | inst_sraiw;
+assign alu_info[`ALU_ADD]  = inst_add   | inst_addi   | inst_addw  | inst_addiw 
+                           | inst_auipc | inst_lui    | inst_i_load | inst_s 
+                           | inst_jal   | inst_jalr;
+assign alu_info[`ALU_SUB]  = inst_sub   | inst_subw   | inst_b;
+assign alu_info[`ALU_SLT]  = inst_slt   | inst_slti   | inst_blt   | inst_bge;
+assign alu_info[`ALU_SLTU] = inst_sltu  | inst_sltiu  | inst_bltu  | inst_bgeu;
+assign alu_info[`ALU_XOR]  = inst_xor   | inst_xori   | inst_beq   | inst_bne;
+assign alu_info[`ALU_OR]   = inst_or    | inst_ori    | inst_csrrs | inst_csrrsi;
+assign alu_info[`ALU_AND]  = inst_and   | inst_andi;
+assign alu_info[`ALU_SLL]  = inst_sll   | inst_slli   | inst_sllw  | inst_slliw;
+assign alu_info[`ALU_SRL]  = inst_srl   | inst_srli   | inst_srlw  | inst_srliw;
+assign alu_info[`ALU_SRA]  = inst_sra   | inst_srai   | inst_sraw  | inst_sraiw;
+assign alu_info[`ALU_ANDN] = inst_csrrc | inst_csrrci;
+assign alu_info[`ALU_WRI]  = inst_csrrw | inst_csrrwi;
 
 assign bj_info[`BJ_BEQ]  = inst_beq;
 assign bj_info[`BJ_BNE]  = inst_bne;
@@ -246,8 +248,8 @@ assign exe_op1 = {64{~rst}} & (
               | ({64{inst_u_lui}}         & 64'b0)
               | ({64{inst_r_word}}        & r_data1 & 64'hffffffff)
               | ({64{inst_b}}             & r_data1)
-              | ({64{inst_i_csr_imm}}     & {59'b0, zimm})
-              | ({64{inst_i_csr_reg}}     & r_data1)
+              | ({64{inst_i_csr_imm}}     & csr_data)
+              | ({64{inst_i_csr_reg}}     & csr_data)
               | ({64{inst_putch}}         & r_data1)
              );
 
@@ -262,8 +264,8 @@ assign exe_op2 = {64{~rst}} & (
               | ({64{inst_u_lui}}         & {{32{immU[19]}}, immU, 12'b0})
               | ({64{inst_r_word}}        & r_data2 & 64'hffffffff)
               | ({64{inst_b}}             & r_data2)
-              | ({64{inst_i_csr_imm}}     & csr_data)
-              | ({64{inst_i_csr_reg}}     & csr_data)
+              | ({64{inst_i_csr_imm}}     & {59'b0, zimm})
+              | ({64{inst_i_csr_reg}}     & r_data1)
              );
 
 assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})

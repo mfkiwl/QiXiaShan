@@ -24,7 +24,42 @@ module regfile(
 
     // 32 registers
 	reg [`REG_BUS] 	regs[0 : 31];
-	
+  
+  initial begin
+		regs[ 0] = `ZERO_WORD;
+		regs[ 1] = `ZERO_WORD;
+		regs[ 2] = `ZERO_WORD;
+		regs[ 3] = `ZERO_WORD;
+		regs[ 4] = `ZERO_WORD;
+		regs[ 5] = `ZERO_WORD;
+		regs[ 6] = `ZERO_WORD;
+		regs[ 7] = `ZERO_WORD;
+		regs[ 8] = `ZERO_WORD;
+		regs[ 9] = `ZERO_WORD;
+		regs[10] = `ZERO_WORD;
+		regs[11] = `ZERO_WORD;
+		regs[12] = `ZERO_WORD;
+		regs[13] = `ZERO_WORD;
+		regs[14] = `ZERO_WORD;
+		regs[15] = `ZERO_WORD;
+		regs[16] = `ZERO_WORD;
+		regs[17] = `ZERO_WORD;
+		regs[18] = `ZERO_WORD;
+		regs[19] = `ZERO_WORD;
+		regs[20] = `ZERO_WORD;
+		regs[21] = `ZERO_WORD;
+		regs[22] = `ZERO_WORD;
+		regs[23] = `ZERO_WORD;
+		regs[24] = `ZERO_WORD;
+		regs[25] = `ZERO_WORD;
+		regs[26] = `ZERO_WORD;
+		regs[27] = `ZERO_WORD;
+		regs[28] = `ZERO_WORD;
+		regs[29] = `ZERO_WORD;
+		regs[30] = `ZERO_WORD;
+		regs[31] = `ZERO_WORD;
+	end
+
 	always @(posedge clk) 
 	begin
 		if ( rst == 1'b1 ) 

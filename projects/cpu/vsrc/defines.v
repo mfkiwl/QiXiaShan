@@ -18,7 +18,9 @@
 `define ALU_SLL    7
 `define ALU_SRL    8
 `define ALU_SRA    9
-`define ALU_BUS    9 : 0
+`define ALU_ANDN   10
+`define ALU_WRI    11
+`define ALU_BUS    11 : 0
 
 `define BJ_BEQ  0
 `define BJ_BNE  1
