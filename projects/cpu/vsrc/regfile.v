@@ -24,7 +24,7 @@ module regfile(
 
     // 32 registers
 	reg [`REG_BUS] 	regs[0 : 31];
-  /*
+  
   initial begin
 		regs[ 0] = `ZERO_WORD;
 		regs[ 1] = `ZERO_WORD;
@@ -59,7 +59,7 @@ module regfile(
 		regs[30] = `ZERO_WORD;
 		regs[31] = `ZERO_WORD;
 	end
-*/
+
 	always @(posedge clk) 
 	begin
 		if ( rst == 1'b1 ) 
