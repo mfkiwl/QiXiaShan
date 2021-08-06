@@ -72,3 +72,9 @@
 `define CSR_MIMPID     4
 `define CSR_MHARTID    5
 `define CSR_BUS        5 : 0
+
+`define EXE_TO_REG   0
+`define MEM_TO_REG   1
+`define PC_TO_REG    2
+`define CSR_TO_REG   3
+`define REG_CTRL_BUS 3 : 0

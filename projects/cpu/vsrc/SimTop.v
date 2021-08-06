@@ -38,9 +38,10 @@ wire [4 : 0]rs2_r_addr;
 wire rd_w_ena;
 wire [4 : 0]rd_w_addr;
 // id_stage -> csrfile
-wire csr_wr_ena;
 wire csr_rd_ena;
-wire [11 : 0] csr_idx;
+wire [11 : 0] csr_rd_addr;
+wire csr_wr_ena;
+wire [11 : 0] csr_wr_addr;
 
 // id_stage -> exe/mem_stage
 wire [`REG_BUS] exe_op1;
@@ -56,8 +57,7 @@ wire is_word_opt;
 wire mem_wr_ena;
 wire mem_rd_ena;
 // id stage -> wb stage
-wire pc_to_reg;
-wire exe_to_reg;
+wire [`REG_CTRL_BUS] reg_wr_ctrl;
 
 // id_stage -> if_stage
 wire [`REG_BUS] jmp_imm;
@@ -122,34 +122,37 @@ id_stage Id_stage(
   .rst(reset),
   .clk(clock),
   .inst(inst),
+  .inst_addr(pc),
+
   .r_data1(r_data1),
   .r_data2(r_data2),
   .csr_data(csr_rd_data),
-  .inst_addr(pc),
-
+  
   .rs1_r_ena(rs1_r_ena),
   .rs1_r_addr(rs1_r_addr),
   .rs2_r_ena(rs2_r_ena),
   .rs2_r_addr(rs2_r_addr),
-  .rd_w_ena(rd_w_ena),
-  .rd_w_addr(rd_w_addr),
-
-  .is_word_opt(is_word_opt),
-  .exe_op1(exe_op1),
-  .exe_op2(exe_op2),
+  .csr_rd_ena(csr_rd_ena),
+  .csr_rd_addr(csr_rd_addr),
   
   .mem_rd_ena(mem_rd_ena),
   .mem_wr_ena(mem_wr_ena),
-  .pc_to_reg(pc_to_reg),
-  .exe_to_reg(exe_to_reg),
-  .csr_rd_ena(csr_rd_ena),
-  .csr_wr_ena(csr_wr_ena),
-
+  
+  .exe_op1(exe_op1),
+  .exe_op2(exe_op2),
+  .is_word_opt(is_word_opt),
   .op_info(op_info),
   .alu_info(alu_info),
   .bj_info(bj_info),
   .load_info(load_info),
   .save_info(save_info),
+
+  .reg_wr_ctrl(reg_wr_ctrl),
+  .csr_wr_ena(csr_wr_ena),
+  .csr_wr_addr(csr_wr_addr),
+  .rd_w_ena(rd_w_ena),
+  .rd_w_addr(rd_w_addr),
+
   .jmp_imm(jmp_imm)
 );
 
@@ -181,10 +184,7 @@ mem_stage Mem_stage(
 
 wb_stage Wb_stage(
   .rst(reset),
-  .mem_to_reg(mem_rd_ena),
-  .pc_to_reg(pc_to_reg),
-  .exe_to_reg(exe_to_reg),
-  .csr_to_reg(csr_rd_ena),
+  .reg_wr_ctrl(reg_wr_ctrl),
   .exe_data(exe_data),
   .mem_data(mem_data),
   .pc_data(pc),
@@ -213,9 +213,10 @@ regfile Regfile(
 csrfile CSRfile(
   .clk(clock),
   .rst(reset),
-  .csr_wr_ena(csr_wr_ena),
   .csr_rd_ena(csr_rd_ena),
-  .csr_idx(csr_idx),
+  .csr_rd_addr(csr_rd_addr),
+  .csr_wr_ena(csr_wr_ena),
+  .csr_wr_addr(csr_wr_addr),
   .csr_wr_data(exe_data),
 
   .csr_rd_data(csr_rd_data),

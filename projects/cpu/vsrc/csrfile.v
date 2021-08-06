@@ -7,8 +7,9 @@ module csrfile(
   input clk,
   input rst,
   input csr_wr_ena,
+  input [11 : 0] csr_wr_addr,
   input csr_rd_ena,
-  input [11 : 0] csr_idx,
+  input [11 : 0] csr_rd_addr,
   input [`REG_BUS] csr_wr_data,
 
   output [`REG_BUS] csr_rd_data,
@@ -16,7 +17,7 @@ module csrfile(
   );
 
   // 0x301 Machine ISA Register
-  wire sel_misa = (csr_idx == 12'h301);
+  wire sel_misa = (csr_rd_addr == 12'h301);
   wire rd_misa = sel_misa & csr_rd_ena;
   wire [`REG_BUS] csr_misa = {
     2'b10
@@ -52,9 +53,10 @@ module csrfile(
   assign csr_o [`CSR_MISA] = csr_misa;
   
   // 0xB00 Cycle Counter
-  wire sel_mcycle = (csr_idx == 12'hb00);
-  wire rd_mcycle = (csr_rd_ena & sel_mcycle);
-  wire wr_mcycle = (csr_wr_ena & sel_mcycle);
+  wire sel_rd_mcycle = (csr_rd_addr == 12'hb00);
+  wire sel_wr_mcycle = (csr_wr_addr == 12'hb00);
+  wire rd_mcycle = (csr_rd_ena & sel_rd_mcycle);
+  wire wr_mcycle = (csr_wr_ena & sel_wr_mcycle);
   reg [`REG_BUS] csr_mcycle;
 
   always @(posedge clk) begin
@@ -72,25 +74,25 @@ module csrfile(
   assign csr_o [`CSR_MCYCLE] = csr_mcycle;
 
   // 0xF11 Machine Vendor ID Register
-  wire sel_mvendorid = (csr_idx == 12'hf11);
+  wire sel_mvendorid = (csr_rd_addr == 12'hf11);
   wire rd_mvendorid = (csr_rd_ena & sel_mvendorid);
   wire [`REG_BUS] csr_mvendorid = `ZERO_WORD;
   assign csr_o [`CSR_MVENDORID] = csr_mvendorid;
   
   // 0xF12 Machine Architecture ID Register
-  wire sel_marchid= (csr_idx == 12'hf12);
+  wire sel_marchid= (csr_rd_addr == 12'hf12);
   wire rd_marchid = (csr_rd_ena & sel_marchid);
   wire [`REG_BUS] csr_marchid = `ZERO_WORD;
   assign csr_o [`CSR_MARCHID] = csr_marchid;
   
   // 0xF13 Machine Implementation ID Register
-  wire sel_mimpid= (csr_idx == 12'hf13);
+  wire sel_mimpid= (csr_rd_addr == 12'hf13);
   wire rd_mimpid = (csr_rd_ena & sel_mimpid);
   wire [`REG_BUS] csr_mimpid = `ZERO_WORD;
   assign csr_o [`CSR_MIMPID] = csr_mimpid;
 
   // 0xF14 Hart ID Register
-  wire sel_mhartid= (csr_idx == 12'hf14);
+  wire sel_mhartid= (csr_rd_addr == 12'hf14);
   wire rd_mhartid = (csr_rd_ena & sel_mhartid);
   wire [`REG_BUS] csr_mhartid = `ZERO_WORD;
   assign csr_o [`CSR_MHARTID] = csr_mhartid;

@@ -5,11 +5,7 @@
 
 module wb_stage (
   input wire rst,
-  // write reg
-  input wire mem_to_reg,
-  input wire pc_to_reg,
-  input wire exe_to_reg,
-  input wire csr_to_reg,
+  input wire [`REG_CTRL_BUS] reg_wr_ctrl,
   input wire [`REG_BUS] exe_data,
   input wire [`REG_BUS] mem_data,
   input wire [`REG_BUS] pc_data,
@@ -17,6 +13,11 @@ module wb_stage (
   
   output wire [`REG_BUS] w_data
   );
+
+  wire mem_to_reg = reg_wr_ctrl[`MEM_TO_REG];
+  wire pc_to_reg  = reg_wr_ctrl[`PC_TO_REG ];
+  wire exe_to_reg = reg_wr_ctrl[`EXE_TO_REG];
+  wire csr_to_reg = reg_wr_ctrl[`CSR_TO_REG];
 
   assign w_data = (rst == 1'b1) ? 0 : ((mem_to_reg == 1'b1) ? mem_data : exe_data);
   assign w_data = {64{~rst}} & (

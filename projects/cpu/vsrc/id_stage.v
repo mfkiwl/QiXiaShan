@@ -8,35 +8,46 @@
 module id_stage(
   input wire rst,
   input wire clk,
+  
+  // data from if_stage
   input wire [31 : 0] inst,
+  input wire [`REG_BUS] inst_addr,
+
+  // data from reg and csr
   input wire [`REG_BUS] r_data1,
   input wire [`REG_BUS] r_data2,
   input wire [`REG_BUS] csr_data,
-  input wire [`REG_BUS] inst_addr,
   
+  // read reg & csr
   output wire rs1_r_ena,
-  output wire [4 : 0]rs1_r_addr,
+  output wire [4 : 0] rs1_r_addr,
   output wire rs2_r_ena,
-  output wire [4 : 0]rs2_r_addr,
-  output wire rd_w_ena,
-  output wire [4 : 0]rd_w_addr,
-  
-  output wire is_word_opt,
-  output wire [`REG_BUS]exe_op1,
-  output wire [`REG_BUS]exe_op2,
+  output wire [4 : 0] rs2_r_addr,
+  output wire csr_rd_ena,
+  output wire [11 : 0] csr_rd_addr,
 
+  // to mem_stage
   output wire mem_rd_ena,
   output wire mem_wr_ena,
-  output wire pc_to_reg,
-  output wire exe_to_reg,
-  output wire csr_rd_ena,
-  output wire csr_wr_ena,
-
+  
+  // to ex_stage
+  output wire [`REG_BUS] exe_op1,
+  output wire [`REG_BUS] exe_op2,
+  output wire is_word_opt,
   output wire [`OP_BUS]  op_info,
   output wire [`ALU_BUS] alu_info,
   output wire [`BJ_BUS]  bj_info,
   output wire [`LOAD_BUS] load_info,
   output wire [`SAVE_BUS] save_info,
+  
+  // to wb_stage
+  output wire [`REG_CTRL_BUS] reg_wr_ctrl,
+  output wire csr_wr_ena,
+  output wire [11 : 0] csr_wr_addr,
+  output wire rd_w_ena,
+  output wire [4 : 0] rd_w_addr,
+  
+  // to if_stage
   output wire [`REG_BUS] jmp_imm
 );
 
@@ -51,7 +62,8 @@ wire [6  : 0] func7 = inst[31 : 25];
 // I-type
 wire [11 : 0] immI = inst[31 : 20];
 wire [4  : 0] zimm = rs1;
-wire [11 : 0] csr_idx = immI;
+assign csr_rd_addr = immI;
+assign csr_wr_addr = immI;
 // S-type
 wire [11 : 0] immS = {inst[31 : 25], inst[11 : 7]};
 // B-type
@@ -230,11 +242,6 @@ assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
 
 assign mem_rd_ena = ~rst & inst_i_load;
 assign mem_wr_ena = ~rst & inst_s;
-assign pc_to_reg = ~rst & (inst_jal | inst_jalr);
-assign exe_to_reg = ~rst & (inst_i_fence | inst_i_arith_dword | inst_u_auipc 
-                          | inst_i_arith_word | inst_r_dword | inst_u_lui
-                          | inst_r_word);
-assign csr_rd_ena = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
 assign csr_wr_ena = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
 
 assign exe_op1 = {64{~rst}} & (
@@ -273,10 +280,19 @@ assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
               | ({64{inst_i_jalr}}  & r_data1 + {{52{immI[11]}}, immI} - inst_addr);
 //              | ({64{inst_t}}       & 64'b0);
 
-always @(posedge clk) begin
-  if (inst_putch) begin
-    $write("%c", exe_op1[7 : 0]);
-  end
-end
+  wire csr_to_reg = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
+  wire pc_to_reg  = ~rst & (inst_jal | inst_jalr);
+  wire mem_to_reg = ~rst & inst_i_load;
+  wire exe_to_reg = ~rst & (
+      inst_i_fence | inst_i_arith_dword | inst_u_auipc 
+    | inst_i_arith_word | inst_r_dword | inst_u_lui
+    | inst_r_word
+  );
+  assign reg_wr_ctrl = {
+    csr_to_reg,
+    pc_to_reg,
+    mem_to_reg,
+    exe_to_reg
+  };
 
 endmodule
