@@ -53,6 +53,9 @@ wire [`LOAD_BUS] load_info;
 wire [`SAVE_BUS] save_info;
 wire is_word_opt;
 
+// id -> exception
+wire [`EXCP_BUS] id_excp;
+
 // id stage -> mem_stage
 wire mem_wr_ena;
 wire mem_rd_ena;
@@ -62,10 +65,28 @@ wire [`REG_CTRL_BUS] reg_wr_ctrl;
 // id_stage -> ex_stage
 wire [`REG_BUS] jmp_imm;
 
+// exception
+wire excp_enter, excp_exit;
+// exception -> if_stage
+wire excp_jmp_ena;
+wire [`REG_BUS] excp_pc;
+// exception -> CSRs
+wire [`REG_BUS] mstatus_wr_data;
+wire [`REG_BUS] mstatus_rd_data;
+wire [`REG_BUS] mie_rd_data;
+wire [`REG_BUS] mtvec_rd_data;
+wire [`REG_BUS] mepc_wr_data;
+wire [`REG_BUS] mepc_rd_data;
+wire [`REG_BUS] mcause_wr_data;
+wire [`REG_BUS] mcause_rd_data;
+wire [`REG_BUS] mtval_rd_data;
+wire [`REG_BUS] mtval_wr_data;
+wire [`REG_BUS] mip_rd_data;
+
 // regfile -> id_stage
 wire [`REG_BUS] r_data1;
 wire [`REG_BUS] r_data2;
-// regfile ->difftest
+// regfile -> difftest
 wire [`REG_BUS] regs[0 : 31];
 
 // csrfile -> id/wb_stage
@@ -89,7 +110,6 @@ wire [`REG_BUS] mem_data;
 // mem_stage -> mem_helper
 wire [7 : 0] byte_enable;
 wire [`REG_BUS] mem_wr_data;
-
 
 // wb_stage -> regfile
 wire [`REG_BUS] rd_data;
@@ -116,6 +136,9 @@ if_stage If_stage(
   .bj_ena(bj_ena),
   .new_pc(new_pc),
   
+  .excp_jmp_ena(excp_jmp_ena),
+  .excp_pc(excp_pc),
+
   .pc_o(pc)
 );
 
@@ -154,7 +177,10 @@ id_stage Id_stage(
   .rd_w_ena(rd_w_ena),
   .rd_w_addr(rd_w_addr),
 
-  .jmp_imm(jmp_imm)
+  .jmp_imm(jmp_imm),
+
+  .id_excp(id_excp),
+  .excp_exit(excp_exit)
 );
 
 ex_stage Ex_stage(
@@ -214,17 +240,52 @@ regfile Regfile(
   .regs_o(regs)
 );
 
+excp_handler Excp_handler(
+  .id_excp(id_excp),
+  .mem_excp(0),
+  .itrp_info(0),
+  .now_pc(pc),
+  .now_inst(inst),
+  .mem_acc_addr(0),
+  .excp_exit(excp_exit),
+
+  .excp_enter(excp_enter),
+  .mcause_wr_data(mcause_wr_data),
+  .mepc_wr_data(mepc_wr_data),
+  .mtval_wr_data(mtval_wr_data),
+  .mstatus_wr_data(mstatus_wr_data),
+  
+  .mstatus_rd_data(mstatus_rd_data),
+  .mtvec_rd_data(mtvec_rd_data),
+  .mepc_rd_data(mepc_rd_data),
+
+  .excp_jmp_ena(excp_jmp_ena),
+  .excp_pc(excp_pc)
+);
+
 csrfile CSRfile(
   .clk(clock),
   .rst(reset),
+
   .csr_rd_ena(csr_rd_ena),
   .csr_rd_addr(csr_rd_addr),
   .csr_wr_ena(csr_wr_ena),
   .csr_wr_addr(csr_wr_addr),
   .csr_wr_data(exe_data),
-
   .csr_rd_data(csr_rd_data),
-  .csr_o(csr_o)
+  
+  .excp_enter(excp_enter),
+  .mstatus_wr_data(mstatus_wr_data),
+  .mstatus_rd_data(mstatus_rd_data),
+  .mie_rd_data(mie_rd_data),
+  .mtvec_rd_data(mtvec_rd_data),
+  .mepc_wr_data(mepc_wr_data),
+  .mepc_rd_data(mepc_rd_data),
+  .mcause_wr_data(mcause_wr_data),
+  .mcause_rd_data(mcause_rd_data),
+  .mtval_wr_data(mtval_wr_data),
+  .mtval_rd_data(mtval_rd_data),
+  .mip_rd_data(mip_rd_data)
 );
 
 // Difftest

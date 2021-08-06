@@ -78,3 +78,22 @@
 `define PC_TO_REG    2
 `define CSR_TO_REG   3
 `define REG_CTRL_BUS 3 : 0
+
+`define SOFT_ITRP  3
+`define TIMER_ITRP 7
+`define EXTER_ITRP 11
+`define ITRP_BUS   11 : 0
+
+`define EXCP_INST_MISAL 0
+`define EXCP_INST_ACC   1
+`define EXCP_ILG_INST   2
+`define EXCP_BRK_PT     3
+`define EXCP_LOAD_MISAL 4
+`define EXCP_LOAD_ACC   5
+`define EXCP_STOR_MISAL 6
+`define EXCP_STOR_ACC   7
+`define EXCP_ECALL_M    11
+`define EXCP_INST_PAGE  12
+`define EXCP_LOAD_PAGE  13
+`define EXCP_STOR_PAGE  15
+`define EXCP_BUS        15 : 0

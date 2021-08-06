@@ -48,29 +48,28 @@ module id_stage(
   output wire [4 : 0] rd_w_addr,
   
   // to if_stage
-  output wire [`REG_BUS] jmp_imm
+  output wire [`REG_BUS] jmp_imm,
+
+  // to excp_handler
+  output wire [`EXCP_BUS] id_excp,
+  output wire excp_exit
 );
 
-// all types
+
 wire [6  : 0] opcode = inst[6 : 0];
-wire [4  : 0] rd = inst[11 :  7];
 wire [2  : 0] func3 = inst[14 : 12];
-wire [4  : 0] rs1 = inst[19 : 15];
-// R-type
-wire [4  : 0] rs2 = inst[24 : 20];
+wire [5  : 0] func6 = inst[31 : 26];
 wire [6  : 0] func7 = inst[31 : 25];
-// I-type
+
+wire [4  : 0] rd = inst[11 :  7];
+wire [4  : 0] rs1 = inst[19 : 15];
+wire [4  : 0] rs2 = inst[24 : 20];
+
 wire [11 : 0] immI = inst[31 : 20];
 wire [4  : 0] zimm = rs1;
-assign csr_rd_addr = immI;
-assign csr_wr_addr = immI;
-// S-type
 wire [11 : 0] immS = {inst[31 : 25], inst[11 : 7]};
-// B-type
 wire [12 : 0] immB = {inst[31], inst[7], inst[30 : 25], inst[11 : 8], 1'b0};
-// U-type
 wire [19 : 0] immU = inst[31 : 12];
-// J-type
 wire [20 : 0] immJ = {inst[31], inst[19 : 12], inst[20], inst[30 : 21], 1'b0};
 
 
@@ -91,6 +90,7 @@ wire func7_20 = (func7 == 7'h20);
 // decode imm12
 wire imm12_000 = (immI == 12'h000);
 wire imm12_001 = (immI == 12'h001);
+wire imm12_102 = (immI == 12'h102);
 
 // decode type
 wire inst_i_load        = (opcode == 7'h03);
@@ -106,12 +106,12 @@ wire inst_b             = (opcode == 7'h63);
 wire inst_i_jalr        = (opcode == 7'h67);
 wire inst_j             = (opcode == 7'h6f);
 wire inst_i_sys         = (opcode == 7'h73);
-wire inst_i_exp         = inst_i_sys & func3_0;
+wire inst_i_excp        = inst_i_sys & func3_0;
 wire inst_i_csr_imm     = inst_i_sys & (func3[2] == 1) & ~func3_0;
 wire inst_i_csr_reg     = inst_i_sys & (func3[2] == 0) & ~func3_0;
 //wire inst_t             = (opcode == 7'h6b); // signal of termination
 wire inst_putch         = (opcode == 7'h7b); //signal of putch
-assign op_info = {inst_putch, inst_i_csr_reg, inst_i_csr_imm, inst_i_exp, inst_j, 
+assign op_info = {inst_putch, inst_i_csr_reg, inst_i_csr_imm, inst_i_excp, inst_j, 
                   inst_i_jalr, inst_b, inst_r_word, inst_u_lui, inst_r_dword, inst_s, 
                   inst_i_arith_word, inst_u_auipc, inst_i_arith_dword, inst_i_fence, 
                   inst_i_load
@@ -180,8 +180,9 @@ wire inst_bgeu    = inst_b & func3_7;
 
 wire inst_jalr    = inst_i_jalr;
 wire inst_jal     = inst_j;
-wire inst_ecall   = inst_i_exp     & imm12_000;
-wire inst_ebreak  = inst_i_exp     & imm12_001;
+wire inst_ecall   = inst_i_excp    & imm12_000;
+wire inst_ebreak  = inst_i_excp    & imm12_001;
+wire inst_mret    = inst_i_excp    & imm12_102;
 wire inst_csrrw   = inst_i_csr_reg & func3_1;
 wire inst_csrrs   = inst_i_csr_reg & func3_2;
 wire inst_csrrc   = inst_i_csr_reg & func3_3;
@@ -240,6 +241,9 @@ assign rd_w_ena   = ~rst & (inst_i_load | inst_i_fence | inst_i_arith_dword
                           | inst_i_csr_imm | inst_i_csr_reg);
 assign rd_w_addr  = (rd_w_ena == 1'b1) ? rd : 0;
 
+assign csr_rd_addr = immI;
+assign csr_wr_addr = immI;
+
 assign mem_rd_ena = ~rst & inst_i_load;
 assign mem_wr_ena = ~rst & inst_s;
 assign csr_wr_ena = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
@@ -295,5 +299,8 @@ assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
     mem_to_reg,
     exe_to_reg
   };
-
+  
+  assign id_excp[`EXCP_BRK_PT]  = inst_ebreak;
+  assign id_excp[`EXCP_ECALL_M] = inst_ecall;
+  assign excp_exit = inst_mret;
 endmodule
