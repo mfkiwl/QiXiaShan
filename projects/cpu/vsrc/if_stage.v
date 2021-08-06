@@ -8,7 +8,7 @@ module if_stage(
   input wire clk,
   input wire rst,
   input wire bj_ena,
-  input wire [`REG_BUS] jmp_imm,
+  input wire [`REG_BUS] new_pc,
   
   output wire [63 : 0]pc_o
   
@@ -23,7 +23,7 @@ module if_stage(
       pc <= `PC_START ;
     end
     else begin
-      pc <= pc + (bj_ena ? jmp_imm : 4);
+      pc <= bj_ena ? new_pc : (pc + 4);
     end
   end
   

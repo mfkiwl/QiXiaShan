@@ -59,7 +59,7 @@ wire mem_rd_ena;
 // id stage -> wb stage
 wire [`REG_CTRL_BUS] reg_wr_ctrl;
 
-// id_stage -> if_stage
+// id_stage -> ex_stage
 wire [`REG_BUS] jmp_imm;
 
 // regfile -> id_stage
@@ -79,6 +79,7 @@ wire [`REG_BUS] mem_addr = exe_data;
 wire [`REG_BUS] csr_wr_data;
 // exe_stage -> if_stage
 wire bj_ena;
+wire [`REG_BUS] new_pc;
 
 // mem_helper -> mem_stage
 wire [`REG_BUS] mem_rd_data;
@@ -113,7 +114,7 @@ if_stage If_stage(
   .clk(clock),
   .rst(reset),
   .bj_ena(bj_ena),
-  .jmp_imm(jmp_imm),
+  .new_pc(new_pc),
   
   .pc_o(pc)
 );
@@ -156,7 +157,7 @@ id_stage Id_stage(
   .jmp_imm(jmp_imm)
 );
 
-exe_stage Exe_stage(
+ex_stage Ex_stage(
   .rst(reset),
   .exe_op1(exe_op1),
   .exe_op2(exe_op2),
@@ -164,8 +165,11 @@ exe_stage Exe_stage(
   .op_info(op_info),
   .alu_info(alu_info),
   .bj_info(bj_info),
-  
+  .jmp_imm(jmp_imm),
+  .now_pc(pc),
+
   .rd_data(exe_data),
+  .new_pc(new_pc),
   .bj_ena(bj_ena)
 );
 

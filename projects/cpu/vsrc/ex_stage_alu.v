@@ -3,7 +3,7 @@
 
 `include "defines.v"
 
-module exe_stage_alu(
+module ex_stage_alu(
   input wire rst,
   input wire [`REG_BUS] op1,
   input wire [`REG_BUS] op2,
