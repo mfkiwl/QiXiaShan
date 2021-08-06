@@ -255,6 +255,7 @@ assign exe_op1 = {64{~rst}} & (
               | ({64{inst_u_lui}}         & 64'b0)
               | ({64{inst_r_word}}        & r_data1 & 64'hffffffff)
               | ({64{inst_b}}             & r_data1)
+              | ({64{inst_i_jalr}}        & r_data1)
               | ({64{inst_i_csr_imm}}     & csr_data)
               | ({64{inst_i_csr_reg}}     & csr_data)
               | ({64{inst_putch}}         & r_data1)
