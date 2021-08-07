@@ -261,7 +261,15 @@ module csrfile(
   wire [`REG_BUS] csr_mhartid = `ZERO_WORD;
 
   assign csr_rd_data = {64{~rst}} & (
-      ({64{rd_misa}}      & csr_misa)
+      ({64{rd_mstatus}}   & csr_mstatus)
+    | ({64{rd_misa}}      & csr_misa)
+    | ({64{rd_mie}}       & csr_mie)
+    | ({64{rd_mtvec}}     & csr_mtvec)
+    | ({64{rd_mscratch}}  & csr_mscratch)
+    | ({64{rd_mepc}}      & csr_mepc)
+    | ({64{rd_mcause}}    & csr_mcause)
+    | ({64{rd_mtval}}     & csr_mtval)
+    | ({64{rd_mip}}       & csr_mip)
     | ({64{rd_mcycle}}    & csr_mcycle)
     | ({64{rd_mvendorid}} & csr_mvendorid)
     | ({64{rd_marchid}}   & csr_marchid)

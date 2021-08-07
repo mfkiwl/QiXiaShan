@@ -345,7 +345,7 @@ assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
     exe_to_reg
   };
   
-  assign id_excp[`EXCP_ILG_INST] = ~inst_vld & ~rst;
+  //assign id_excp[`EXCP_ILG_INST] = ~inst_vld & ~rst; // it may cause error
   assign id_excp[`EXCP_BRK_PT]   = inst_ebreak;
   assign id_excp[`EXCP_ECALL_M]  = inst_ecall;
   assign excp_exit = inst_mret;
