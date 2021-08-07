@@ -23,7 +23,7 @@ module if_stage(
   always@(posedge clk)
   begin
     if( rst == 1'b1 ) begin
-      pc <= `PC_START ;
+      pc <= `PC_START - 4;
     end
     else begin
       pc <= excp_jmp_ena ? excp_pc :
