@@ -311,23 +311,23 @@ reg [63:0] instrCnt;
 
 always @(posedge clock) begin
   if (reset) begin
-    {cmt_wen, cmt_wdest, cmt_wdata, cmt_pc, cmt_inst, vaild, cycleCnt, instrCnt} = 0;
+    {cmt_wen, cmt_wdest, cmt_wdata, cmt_pc, cmt_inst, vaild, cycleCnt, instrCnt} <= 0;
   end
   else begin
-    cmt_wen = rd_w_ena;
-    cmt_wdest = {3'd0, rd_w_addr};
-    cmt_wdata = rd_data;
-    cmt_pc = pc;
-    cmt_inst = inst;
-    vaild = 1'd1;
+    cmt_wen <= rd_w_ena;
+    cmt_wdest <= {3'd0, rd_w_addr};
+    cmt_wdata <= rd_data;
+    cmt_pc <= pc;
+    cmt_inst <= inst;
+    vaild <= 1'd1;
 
     // Skip comparison of the first instruction
     // Because the result required to commit cannot be calculated in time before first InstrCommit during verilator simulation
     // Maybe you can avoid it in pipeline
-    skip = (pc == `PC_START) | (op_info[`INST_PUTCH]);
+    skip <= (pc == `PC_START) | (op_info[`INST_PUTCH]);
     
-    cycleCnt += 1;
-    instrCnt += 1;
+    cycleCnt <= cycleCnt + 1;
+    instrCnt <= instrCnt + 1;
   end
 end
 

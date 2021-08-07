@@ -83,6 +83,10 @@ wire func3_5 = (func3 == 3'h5);
 wire func3_6 = (func3 == 3'h6);
 wire func3_7 = (func3 == 3'h7);
 
+// decode func6
+wire func6_00 = (func6 == 6'h00);
+wire func6_10 = (func6 == 6'h10);
+
 // decode func7
 wire func7_00 = (func7 == 7'h00);
 wire func7_20 = (func7 == 7'h20);
@@ -119,6 +123,7 @@ assign op_info = {inst_putch, inst_i_csr_reg, inst_i_csr_imm, inst_i_excp, inst_
 assign is_word_opt = inst_r_word | inst_i_arith_word;
 
 // decode arithmetic
+// load
 wire inst_lb      = inst_i_load & func3_0;
 wire inst_lh      = inst_i_load & func3_1;
 wire inst_lw      = inst_i_load & func3_2;
@@ -126,32 +131,47 @@ wire inst_ld      = inst_i_load & func3_3;
 wire inst_lbu     = inst_i_load & func3_4;
 wire inst_lhu     = inst_i_load & func3_5;
 wire inst_lwu     = inst_i_load & func3_6;
+wire load_vld     = inst_lb | inst_lh | inst_lw | inst_ld 
+                  | inst_lbu | inst_lhu | inst_lwu;
 
+// fence
 wire inst_fence   = inst_i_fence & func3_0;
 wire inst_fence_i = inst_i_fence & func3_1;
+wire fence_vld    = inst_fence | inst_fence_i;
 
+// arith-i-dword
 wire inst_addi    = inst_i_arith_dword & func3_0;
-wire inst_slli    = inst_i_arith_dword & func3_1 & (func7[6 : 1] == 6'h00);
+wire inst_slli    = inst_i_arith_dword & func3_1 & func6_00;
 wire inst_slti    = inst_i_arith_dword & func3_2;
 wire inst_sltiu   = inst_i_arith_dword & func3_3;
 wire inst_xori    = inst_i_arith_dword & func3_4;
-wire inst_srli    = inst_i_arith_dword & func3_5 & (func7[6 : 1] == 6'h00);
-wire inst_srai    = inst_i_arith_dword & func3_5 & (func7[6 : 1] == 6'h10);
+wire inst_srli    = inst_i_arith_dword & func3_5 & func6_00;
+wire inst_srai    = inst_i_arith_dword & func3_5 & func6_10;
 wire inst_ori     = inst_i_arith_dword & func3_6;
 wire inst_andi    = inst_i_arith_dword & func3_7;
+wire arith_id_vld = inst_addi | inst_slli | inst_slti | inst_sltiu 
+                  | inst_xori | inst_srli | inst_srai | inst_ori
+                  | inst_andi;
 
+// auipc
 wire inst_auipc   = inst_u_auipc;
+wire auipc_vld    = inst_auipc;
 
+// arith-i-word
 wire inst_addiw   = inst_i_arith_word & func3_0;
 wire inst_slliw   = inst_i_arith_word & func3_1;
-wire inst_srliw   = inst_i_arith_word & func3_5 & (func7[6 : 1] == 6'h00);
-wire inst_sraiw   = inst_i_arith_word & func3_5 & (func7[6 : 1] == 6'h10);
+wire inst_srliw   = inst_i_arith_word & func3_5 & func6_00;
+wire inst_sraiw   = inst_i_arith_word & func3_5 & func6_10;
+wire arith_iw_vld = inst_addiw | inst_slliw | inst_srliw | inst_srliw | inst_sraiw;
 
+// store
 wire inst_sb      = inst_s & func3_0;
 wire inst_sh      = inst_s & func3_1;
 wire inst_sw      = inst_s & func3_2;
 wire inst_sd      = inst_s & func3_3;
+wire store_vld    = inst_sb | inst_sh | inst_sw | inst_sd;
 
+// arith-r-dword
 wire inst_add     = inst_r_dword & func3_0 & func7_00;
 wire inst_sub     = inst_r_dword & func3_0 & func7_20;
 wire inst_sll     = inst_r_dword & func3_1;
@@ -162,33 +182,58 @@ wire inst_srl     = inst_r_dword & func3_5 & func7_00;
 wire inst_sra     = inst_r_dword & func3_5 & func7_20;
 wire inst_or      = inst_r_dword & func3_6;
 wire inst_and     = inst_r_dword & func3_7;
+wire arith_rd_vld = inst_add  | inst_sub | inst_sll | inst_slt 
+                  | inst_sltu | inst_xor | inst_srl | inst_sra
+                  | inst_or   | inst_and;
 
+// lui
 wire inst_lui     = inst_u_lui;
+wire lui_vld      = inst_lui;
 
+// arith-r-word
 wire inst_addw    = inst_r_word & func3_0 & func7_00;
 wire inst_subw    = inst_r_word & func3_0 & func7_20;
 wire inst_sllw    = inst_r_word & func3_1;
 wire inst_srlw    = inst_r_word & func3_5 & func7_00;
 wire inst_sraw    = inst_r_word & func3_5 & func7_20;
+wire arith_rw_vld = inst_addw | inst_subw | inst_sllw 
+                  | inst_srlw | inst_sraw;
 
+// branch
 wire inst_beq     = inst_b & func3_0;
 wire inst_bne     = inst_b & func3_1;
 wire inst_blt     = inst_b & func3_4;
 wire inst_bge     = inst_b & func3_5;
 wire inst_bltu    = inst_b & func3_6;
 wire inst_bgeu    = inst_b & func3_7;
+wire branch_vld   = inst_beq | inst_bne  | inst_blt 
+                  | inst_bge | inst_bltu | inst_bgeu;
 
+// jump
 wire inst_jalr    = inst_i_jalr;
 wire inst_jal     = inst_j;
+wire jump_vld     = inst_jalr | inst_jal;
+
+// exception
 wire inst_ecall   = inst_i_excp    & imm12_000;
 wire inst_ebreak  = inst_i_excp    & imm12_001;
 wire inst_mret    = inst_i_excp    & imm12_102;
+wire excp_vld     = inst_ecall | inst_ebreak | inst_mret;
+
+// csr
 wire inst_csrrw   = inst_i_csr_reg & func3_1;
 wire inst_csrrs   = inst_i_csr_reg & func3_2;
 wire inst_csrrc   = inst_i_csr_reg & func3_3;
 wire inst_csrrwi  = inst_i_csr_imm & func3_5;
 wire inst_csrrsi  = inst_i_csr_imm & func3_6;
 wire inst_csrrci  = inst_i_csr_imm & func3_7;
+wire csr_vld      = inst_csrrw  | inst_csrrs  | inst_csrrc
+                  | inst_csrrwi | inst_csrrsi | inst_csrrci;
+
+wire inst_vld     = load_vld | fence_vld | arith_id_vld | auipc_vld
+                  | arith_iw_vld | store_vld | arith_rd_vld | lui_vld
+                  | arith_rw_vld | branch_vld |jump_vld | excp_vld
+                  | csr_vld;
 
 assign alu_info[`ALU_ADD]  = inst_add   | inst_addi   | inst_addw  | inst_addiw 
                            | inst_auipc | inst_lui    | inst_i_load | inst_s 
@@ -300,7 +345,8 @@ assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
     exe_to_reg
   };
   
-  assign id_excp[`EXCP_BRK_PT]  = inst_ebreak;
-  assign id_excp[`EXCP_ECALL_M] = inst_ecall;
+  assign id_excp[`EXCP_ILG_INST] = ~inst_vld;
+  assign id_excp[`EXCP_BRK_PT]   = inst_ebreak;
+  assign id_excp[`EXCP_ECALL_M]  = inst_ecall;
   assign excp_exit = inst_mret;
 endmodule
