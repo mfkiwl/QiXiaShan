@@ -162,7 +162,7 @@ wire inst_addiw   = inst_i_arith_word & func3_0;
 wire inst_slliw   = inst_i_arith_word & func3_1;
 wire inst_srliw   = inst_i_arith_word & func3_5 & func6_00;
 wire inst_sraiw   = inst_i_arith_word & func3_5 & func6_10;
-wire arith_iw_vld = inst_addiw | inst_slliw | inst_srliw | inst_srliw | inst_sraiw;
+wire arith_iw_vld = inst_addiw | inst_slliw | inst_srliw | inst_sraiw;
 
 // store
 wire inst_sb      = inst_s & func3_0;
@@ -232,7 +232,7 @@ wire csr_vld      = inst_csrrw  | inst_csrrs  | inst_csrrc
 
 wire inst_vld     = load_vld | fence_vld | arith_id_vld | auipc_vld
                   | arith_iw_vld | store_vld | arith_rd_vld | lui_vld
-                  | arith_rw_vld | branch_vld |jump_vld | excp_vld
+                  | arith_rw_vld | branch_vld | jump_vld | excp_vld
                   | csr_vld;
 
 assign alu_info[`ALU_ADD]  = inst_add   | inst_addi   | inst_addw  | inst_addiw 
@@ -345,7 +345,7 @@ assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
     exe_to_reg
   };
   
-  //assign id_excp[`EXCP_ILG_INST] = ~inst_vld;
+  assign id_excp[`EXCP_ILG_INST] = ~inst_vld;
   assign id_excp[`EXCP_BRK_PT]   = inst_ebreak;
   assign id_excp[`EXCP_ECALL_M]  = inst_ecall;
   assign excp_exit = inst_mret;
