@@ -22,6 +22,7 @@ module csrfile(
   output [`REG_BUS] mstatus_rd_data,
   output [`REG_BUS] mie_rd_data,
   output [`REG_BUS] mtvec_rd_data,
+  output [`REG_BUS] mscratch_rd_data,
   input  [`REG_BUS] mepc_wr_data,
   output [`REG_BUS] mepc_rd_data,
   input  [`REG_BUS] mcause_wr_data,
@@ -40,7 +41,7 @@ module csrfile(
 
   always @(posedge clk) begin
     if (rst == 1'b1) begin
-      csr_mstatus <= 64'h0;
+      csr_mstatus <= 64'h1888;
     end
     else if (excp_enter | excp_exit) begin
       csr_mstatus <= mstatus_wr_data;
@@ -137,6 +138,8 @@ module csrfile(
       csr_mscratch <= csr_wr_data;
     end
   end
+
+  assign mscratch_rd_data = csr_mscratch;
 
   // 0x341 Machine Exception Program Counter
   wire sel_rd_mepc = (csr_rd_addr == 12'h341);

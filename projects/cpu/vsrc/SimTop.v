@@ -77,6 +77,7 @@ wire [`REG_BUS] mstatus_wr_data;
 wire [`REG_BUS] mstatus_rd_data;
 wire [`REG_BUS] mie_rd_data;
 wire [`REG_BUS] mtvec_rd_data;
+wire [`REG_BUS] mscratch_rd_data;
 wire [`REG_BUS] mepc_wr_data;
 wire [`REG_BUS] mepc_rd_data;
 wire [`REG_BUS] mcause_wr_data;
@@ -287,6 +288,7 @@ csrfile CSRfile(
   .mstatus_rd_data(mstatus_rd_data),
   .mie_rd_data(mie_rd_data),
   .mtvec_rd_data(mtvec_rd_data),
+  .mscratch_rd_data(mscratch_rd_data),
   .mepc_wr_data(mepc_wr_data),
   .mepc_rd_data(mepc_rd_data),
   .mcause_wr_data(mcause_wr_data),
@@ -395,20 +397,20 @@ DifftestCSRState DifftestCSRState(
   .clock              (clock),
   .coreid             (0),
   .priviledgeMode     (0),
-  .mstatus            (0),
+  .mstatus            (mstatus_rd_data),
   .sstatus            (0),
-  .mepc               (0),
+  .mepc               (mepc_rd_data),
   .sepc               (0),
-  .mtval              (0),
+  .mtval              (mtval_rd_data),
   .stval              (0),
-  .mtvec              (0),
+  .mtvec              (mtvec_rd_data),
   .stvec              (0),
-  .mcause             (0),
+  .mcause             (mcause_rd_data),
   .scause             (0),
   .satp               (0),
-  .mip                (0),
+  .mip                (mip_rd_data),
   .mie                (0),
-  .mscratch           (0),
+  .mscratch           (mscratch_rd_data),
   .sscratch           (0),
   .mideleg            (0),
   .medeleg            (0)
