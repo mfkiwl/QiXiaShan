@@ -250,7 +250,7 @@ regfile Regfile(
 excp_handler Excp_handler(
   .if_excp(if_excp),
   .id_excp(id_excp),
-  .mem_excp(mem_excp),
+  .mem_excp(0),
   .itrp_info(0),
   .now_pc(pc),
   .now_inst(inst),
