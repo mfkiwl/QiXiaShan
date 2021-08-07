@@ -28,6 +28,8 @@ module SimTop(
 wire [31 : 0]  inst;
 wire [63 : 0]  pc; 
 wire           inst_ena;
+// if -> exception
+wire [`EXCP_BUS] if_excp;
 
 // id_stage
 // id_stage -> regfile
@@ -110,6 +112,8 @@ wire [`REG_BUS] mem_data;
 // mem_stage -> mem_helper
 wire [7 : 0] byte_enable;
 wire [`REG_BUS] mem_wr_data;
+// mem_stage -> excp_handler
+wire [`EXCP_BUS] mem_excp;
 
 // wb_stage -> regfile
 wire [`REG_BUS] rd_data;
@@ -139,7 +143,8 @@ if_stage If_stage(
   .excp_jmp_ena(excp_jmp_ena),
   .excp_pc(excp_pc),
 
-  .pc_o(pc)
+  .pc_o(pc),
+  .if_excp(if_excp)
 );
 
 id_stage Id_stage(
@@ -209,7 +214,8 @@ mem_stage Mem_stage(
 
   .mem_data(mem_data),
   .mem_wr_data(mem_wr_data),
-  .byte_enable(byte_enable)
+  .byte_enable(byte_enable),
+  .mem_excp(mem_excp)
 );
 
 wb_stage Wb_stage(
@@ -241,8 +247,9 @@ regfile Regfile(
 );
 
 excp_handler Excp_handler(
+  .if_excp(if_excp),
   .id_excp(id_excp),
-  .mem_excp(0),
+  .mem_excp(mem_excp),
   .itrp_info(0),
   .now_pc(pc),
   .now_inst(inst),
@@ -275,6 +282,7 @@ csrfile CSRfile(
   .csr_rd_data(csr_rd_data),
   
   .excp_enter(excp_enter),
+  .excp_exit(excp_exit),
   .mstatus_wr_data(mstatus_wr_data),
   .mstatus_rd_data(mstatus_rd_data),
   .mie_rd_data(mie_rd_data),

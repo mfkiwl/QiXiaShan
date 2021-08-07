@@ -17,6 +17,7 @@ module csrfile(
   
   // exception read and write
   input excp_enter,
+  input excp_exit,
   input  [`REG_BUS] mstatus_wr_data,
   output [`REG_BUS] mstatus_rd_data,
   output [`REG_BUS] mie_rd_data,
@@ -35,20 +36,17 @@ module csrfile(
   wire sel_wr_mstatus = (csr_wr_addr == 12'h300);
   wire rd_mstatus = sel_rd_mstatus & csr_rd_ena;
   wire wr_mstatus = sel_wr_mstatus & csr_wr_ena;
-  
-  wire [`REG_BUS] mstatus_wmask = ~(64'b0);
-  /*
-     TODO
-  */
   reg [`REG_BUS] csr_mstatus;
 
   always @(posedge clk) begin
     if (rst == 1'b1) begin
       csr_mstatus <= 64'h0;
     end
+    else if (excp_enter | excp_exit) begin
+      csr_mstatus <= mstatus_wr_data;
+    end
     else if (wr_mstatus) begin
-      csr_mstatus <= (csr_mstatus & ~mstatus_wmask) 
-                   | (csr_wr_data & mstatus_wmask);
+      csr_mstatus <= csr_wr_data;
     end
   end
 

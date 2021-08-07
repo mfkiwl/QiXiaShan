@@ -10,7 +10,8 @@ module mem_stage(
 
   output [`REG_BUS] mem_data,
   output [`REG_BUS] mem_wr_data,
-  output [7 : 0] byte_enable
+  output [7 : 0] byte_enable,
+  output [`EXCP_BUS] mem_excp
 );
 
 wire addr_0 = (mem_addr[2 : 0] == 3'h0);
