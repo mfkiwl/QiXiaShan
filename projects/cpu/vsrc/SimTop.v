@@ -6,7 +6,6 @@
 
 `include "defines.v"
 
-
 module SimTop(
   input wire            clock,
   input wire            reset,
@@ -183,8 +182,7 @@ module SimTop(
   // mem_stage -> excp_handler
   wire [`EXCP_BUS] mem_excp;
   // mem control
-  wire mem_wr_ena;
-  wire mem_rd_ena;
+  wire mem_wr_ena, mem_rd_ena;
   
   mem_stage Mem_stage(
     .clk(clock),
