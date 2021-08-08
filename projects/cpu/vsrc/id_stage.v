@@ -325,9 +325,9 @@ assign exe_op2 = {64{~rst}} & (
               | ({64{inst_i_csr_reg}}     & r_data1)
              );
 
-assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
-              | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
-              | ({64{inst_i_jalr}}  & {{52{immI[11]}}, immI});
+  assign jmp_imm = ({64{inst_b}}      & {{51{immB[12]}}, immB})
+                | ({64{inst_j}}       & {{43{immJ[20]}}, immJ})
+                | ({64{inst_i_jalr}}  & {{52{immI[11]}}, immI});
 //              | ({64{inst_t}}       & 64'b0);
 
   wire csr_to_reg = ~rst & (inst_i_csr_imm | inst_i_csr_reg);
