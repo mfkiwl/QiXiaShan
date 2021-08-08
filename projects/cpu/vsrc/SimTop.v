@@ -144,7 +144,7 @@ if_stage If_stage(
   .excp_jmp_ena(excp_jmp_ena),
   .excp_pc(excp_pc),
 
-  .pc_o(pc),
+  .pc(pc),
   .if_excp(if_excp)
 );
 

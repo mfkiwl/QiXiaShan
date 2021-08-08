@@ -13,11 +13,9 @@ module if_stage(
   input wire excp_jmp_ena,
   input wire [`REG_BUS] excp_pc,
 
-  output wire [63 : 0]pc_o,
+  output reg [`REG_BUS] pc,
   output wire [`EXCP_BUS] if_excp
   );
-
-  reg [`REG_BUS]pc;
 
   // fetch an instruction
   always@(posedge clk)
@@ -32,7 +30,6 @@ module if_stage(
     end
   end
   
-  assign pc_o = pc;
   assign if_excp[`EXCP_INST_MISAL] = (pc[1] | pc[0]);
 
 endmodule
