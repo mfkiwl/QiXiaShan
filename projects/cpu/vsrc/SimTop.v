@@ -135,9 +135,17 @@ RAM_1W2R RAM_1W2R(
   .mem_rd_data(mem_rd_data)
 );
 
+wire if_ready_go;
+wire if_id_valid;
+
 if_stage If_stage(
   .clk(clock),
   .rst(reset),
+  
+  .id_allowin(id_allowin),
+  .if_ready_go(if_ready_go),
+  .if_id_valid(if_id_valid),
+
   .bj_ena(bj_ena),
   .new_pc(new_pc),
   
@@ -148,9 +156,19 @@ if_stage If_stage(
   .if_excp(if_excp)
 );
 
+wire id_allowin;
+wire id_ready_go;
+wire id_ex_valid;
+
 id_stage Id_stage(
   .rst(reset),
   .clk(clock),
+
+  .ex_allowin(ex_allowin),
+  .id_allowin(id_allowin),
+  .id_ready_go(id_ready_go),
+  .id_ex_valid(id_ex_valid),
+
   .inst(inst),
   .inst_addr(pc),
 
@@ -189,8 +207,19 @@ id_stage Id_stage(
   .excp_exit(excp_exit)
 );
 
+wire ex_allowin;
+wire ex_ready_go;
+wire ex_mem_valid;
+
 ex_stage Ex_stage(
+  .clk(clock),
   .rst(reset),
+
+  .mem_allowin(mem_allowin),
+  .ex_allowin(ex_allowin),
+  .ex_ready_go(ex_ready_go),
+  .ex_mem_valid(ex_mem_valid),
+
   .exe_op1(exe_op1),
   .exe_op2(exe_op2),
   .is_word_opt(is_word_opt),
@@ -205,8 +234,19 @@ ex_stage Ex_stage(
   .bj_ena(bj_ena)
 );
 
+wire mem_allowin;
+wire mem_ready_go;
+wire mem_wb_valid;
+
 mem_stage Mem_stage(
+  .clk(clock),
   .rst(reset),
+
+  .wb_allowin(wb_allowin),
+  .mem_allowin(mem_allowin),
+  .mem_ready_go(mem_ready_go),
+  .mem_wb_valid(mem_wb_valid),
+
   .r_data2(r_data2),
   .load_info(load_info),
   .save_info(save_info),
@@ -219,8 +259,14 @@ mem_stage Mem_stage(
   .mem_excp(mem_excp)
 );
 
+wire wb_allowin;
+
 wb_stage Wb_stage(
+  .clk(clock),
   .rst(reset),
+  
+  .wb_allowin(wb_allowin),
+
   .reg_wr_ctrl(reg_wr_ctrl),
   .exe_data(exe_data),
   .mem_data(mem_data),

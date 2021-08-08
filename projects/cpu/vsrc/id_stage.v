@@ -9,6 +9,12 @@ module id_stage(
   input wire rst,
   input wire clk,
   
+  // pipeline control
+  input wire ex_allowin,
+  output wire id_allowin,
+  output wire id_ready_go,
+  output wire id_ex_valid,
+
   // data from if_stage
   input wire [31 : 0] inst,
   input wire [`REG_BUS] inst_addr,
@@ -55,6 +61,12 @@ module id_stage(
   output wire excp_exit
 );
 
+
+// pipeline control
+wire id_valid = 1'b1;
+assign id_ready_go = 1'b1;
+assign id_allowin = !id_valid || id_ready_go && ex_allowin;
+assign id_ex_valid = id_valid && id_ready_go;
 
 wire [6  : 0] opcode = inst[6 : 0];
 wire [2  : 0] func3 = inst[14 : 12];

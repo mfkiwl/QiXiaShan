@@ -4,7 +4,12 @@
 `include "defines.v"
 
 module wb_stage (
+  input wire clk,
   input wire rst,
+
+  // pipeline control
+  output wire wb_allowin,
+  
   input wire [`REG_CTRL_BUS] reg_wr_ctrl,
   input wire [`REG_BUS] exe_data,
   input wire [`REG_BUS] mem_data,
@@ -13,6 +18,8 @@ module wb_stage (
   
   output wire [`REG_BUS] w_data
   );
+  
+  assign wb_allowin = 1'b1;
 
   wire mem_to_reg = reg_wr_ctrl[`MEM_TO_REG];
   wire pc_to_reg  = reg_wr_ctrl[`PC_TO_REG ];

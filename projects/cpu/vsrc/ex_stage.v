@@ -4,7 +4,15 @@
 `include "defines.v"
 
 module ex_stage(
+  input wire clk,
   input wire rst,
+  
+  // pipeline control
+  input wire mem_allowin,
+  output wire ex_allowin,
+  output wire ex_ready_go,
+  output wire ex_mem_valid,
+
   input wire [`REG_BUS] exe_op1,
   input wire [`REG_BUS] exe_op2,
   input wire is_word_opt,
@@ -17,7 +25,13 @@ module ex_stage(
   output wire [`REG_BUS] rd_data,
   output wire [`REG_BUS] new_pc,
   output wire bj_ena
-);
+  );
+
+  // pipeline control
+  wire ex_valid = 1'b1;
+  assign ex_ready_go = 1'b1;
+  assign ex_allowin = !ex_valid || ex_ready_go && mem_allowin;
+  assign ex_mem_valid = ex_valid && ex_ready_go;
 
 // alu -> bj
 wire [`BJ_BUS] bj_data;
